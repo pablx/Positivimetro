@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html class="js consumer chrome  chrome" lang="en" id="win">
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src="Chart.js"></script>
+    <meta charset="utf-8">
+    <!--meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport"-->
+    <title>
+        Evaluador de asambleas
+    </title>
+<body>
+<div id="graf">
+<canvas id="myChart1" width="400" height="400"></canvas>
+<canvas id="myChart2" width="400" height="400"></canvas>
+<canvas id="myChart3" width="400" height="400"></canvas></div>
+</body>
+<script>
+'use strict';
+
+
+
+window.randomScalingFactor = function() {
+	return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
+};
+
+(function(global) {
+	
+
+	var Samples = global.Samples || (global.Samples = {});
+	Samples.utils = {
+		// Adapted from http://indiegamr.com/generate-repeatable-random-numbers-in-js/
+		srand: function(seed) {
+			this._seed = seed;
+		},
+
+		rand: function(min, max) {
+			var seed = this._seed;
+			min = min === undefined? 0 : min;
+			max = max === undefined? 1 : max;
+			this._seed = (seed * 9301 + 49297) % 233280;
+			return min + (this._seed / 233280) * (max - min);
+		},
+
+		numbers: function(config) {
+			var cfg = config || {};
+			var min = cfg.min || 0;
+			var max = cfg.max || 1;
+			var from = cfg.from || [];
+			var count = cfg.count || 8;
+			var decimals = cfg.decimals || 8;
+			var continuity = cfg.continuity || 1;
+			var dfactor = Math.pow(10, decimals) || 0;
+			var data = [];
+			var i, value;
+
+			for (i=0; i<count; ++i) {
+				value = (from[i] || 0) + this.rand(min, max);
+				if (this.rand() <= continuity) {
+					data.push(Math.round(dfactor * value) / dfactor);
+				} else {
+					data.push(null);
+				}
+			}
+
+			return data;
+		},
+
+		labels: function(config) {
+			var cfg = config || {};
+			var min = cfg.min || 0;
+			var max = cfg.max || 100;
+			var count = cfg.count || 8;
+			var step = (max-min) / count;
+			var decimals = cfg.decimals || 8;
+			var dfactor = Math.pow(10, decimals) || 0;
+			var prefix = cfg.prefix || '';
+			var values = [];
+			var i;
+
+			for (i=min; i<max; i+=step) {
+				values.push(prefix + Math.round(dfactor * i) / dfactor);
+			}
+
+			return values;
+		},
+
+		transparentize: function(color, opacity) {
+			var alpha = opacity === undefined? 0.5 : 1 - opacity;
+			return Chart.helpers.color(color).alpha(alpha).rgbString();
+		},
+
+		merge: Chart.helpers.configMerge
+	};
+
+	Samples.utils.srand(Date.now());
+
+}(this));
+var colors = [
+	
+	'rgb(255, 99, 132)',
+	'rgb(255, 159, 64)',
+	'rgb(255, 205, 86)',
+	'rgb(75, 192, 192)',
+	'rgb(54, 162, 235)',
+	'rgb(153, 102, 255)',
+	'rgb(201, 203, 207)',
+	'rgb(255, 20, 12)',
+	'rgb(75, 152, 52)',
+	'rgb(101, 103, 107)',
+	'rgb(250, 250, 250)',
+];
+var datos=[1,40,60,7,50];
+var noms=["uno","dos","tres","cuatro","cinco"];
+graphs(datos,noms,1);
+datos=[100,40,60,7,50];
+graphs(datos,noms,2);
+datos=[1,4,6,70,5];
+graphs(datos,noms,3);
+
+function graphs(datos,nom,n){
+	var ctx = document.getElementById("myChart"+n).getContext('2d');
+	var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+    };
+	var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: datos,
+                backgroundColor: colors.slice(0,datos.length),
+                label: 'Dataset 1'
+            }],
+            labels: nom
+        },
+        options: {
+            events: false,
+	animation: {
+    duration: 500,
+    easing: "easeOutQuart",
+    onComplete: function () {
+      var ctx = this.chart.ctx;
+      ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+
+      this.data.datasets.forEach(function (dataset) {
+
+        for (var i = 0; i < dataset.data.length; i++) {
+          var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+              total = dataset._meta[Object.keys(dataset._meta)[0]].total,
+              mid_radius = model.innerRadius + (model.outerRadius - model.innerRadius)/2,
+              start_angle = model.startAngle,
+              end_angle = model.endAngle,
+              mid_angle = start_angle + (end_angle - start_angle)/2;
+
+          var x = mid_radius * Math.cos(mid_angle);
+          var y = mid_radius * Math.sin(mid_angle);
+
+          ctx.fillStyle = '#fff';
+          if (i == 3){ // Darker text color for lighter background
+            ctx.fillStyle = '#444';
+          }
+          var percent = String(Math.round(dataset.data[i]/total*100)) + "%";
+          ctx.fillText(dataset.data[i], model.x + x, model.y + y);
+          // Display percent in another line, line break doesn't work for fillText
+          ctx.fillText(percent, model.x + x, model.y + y + 15);
+        }
+      });               
+    }
+  }
+        }
+    };
+	
+	var myPieChart = new Chart(ctx,config);
+	
+}
+
+</script>
+</html>

@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+
+<html class="js consumer chrome  chrome" lang="en" id="win">
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src="aes.js"></script>
+	<script src="aes-ctr.js"></script>
+	<script src="Chart.js"></script>
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>
+        Evaluador de asambleas
+    </title>
+<style>
+#instruc {
+	position:absolute;
+	left: 2%; 
+	top: 2%;
+	padding:1em;
+    width: 90%;
+    height: 90%;
+	display:none;
+	overflow:auto;
+	z-index: 4;
+	background:rgba(255,255,255,1);
+	border: 1px solid #aaaaaa;
+	border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 2px solid #000000;
+}
+#partsOgrupos{
+	position:absolute;
+	left: 5%; 
+	top: 20%;
+	padding:1em;
+    width: 80%;
+    height: 50px;
+	display:none;
+	z-index: 4;
+	background:rgba(255,255,255,1);
+	border: 1px solid #aaaaaa;
+	border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 2px solid #000000;
+}
+
+#parts {
+	position:absolute;
+	left: 5%; 
+	top: 40px;
+	padding:1em;
+    width: 80%;
+    height: 150px;
+	display:none;
+	z-index: 4;
+	background:rgba(255,255,255,1);
+	border: 1px solid #aaaaaa;
+	border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 2px solid #000000;
+}
+
+#groups {
+	position:absolute;
+	left: 5%; 
+	top: 40px;
+	padding:1em;
+    width: 80%;
+    height: 150px;
+	display:none;
+	z-index: 4;
+	background:rgba(255,255,255,1);
+	border: 1px solid #aaaaaa;
+	border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 2px solid #000000;
+}
+
+#encr {
+	position:absolute;
+	left: 5%; 
+	top: 40px;
+	padding:1em;
+    width: 80%;
+    height: 50px;
+	display:none;
+	z-index: 4;
+	background:rgba(255,255,255,1);
+	border: 1px solid #aaaaaa;
+	border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 2px solid #000000;
+}
+#decri {
+	position:absolute;
+	left: 5%; 
+	top: 40px;
+	padding:1em;
+    width: 80%;
+    height: 50px;
+	display:none;
+	z-index: 4;
+	background:rgba(255,255,255,1);
+	border: 1px solid #aaaaaa;
+	border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 2px solid #000000;
+}
+
+#cats {
+	position:absolute;
+	left: 5%; 
+	top: 40px;
+	padding:1em;
+    width: 80%;
+    height: 80%;
+	display:none;
+	z-index: 4;
+	overflow:auto;
+	background:rgba(255,255,255,1);
+	border: 1px solid #aaaaaa;
+	border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 2px solid #000000;
+}
+
+#existe{
+	color:#f00;
+	display:none;
+	padding-top:1em;
+}
+
+#existeG{
+	color:#f00;
+	display:none;
+	padding-top:1em;
+}
+
+#wind { 
+	position:absolute;
+	left: 0; 
+	top: 0;
+    width: 100%;
+    height: 100%;
+	background:rgba(0,0,0,0.3);
+	z-index: 3;
+	display: none;
+}
+
+#asamblea{
+	display:none;
+}
+.container {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+}
+
+.play {
+position: absolute;
+left:5%;
+    width: 0;
+    height: 0;
+    border-top: 16px solid transparent;
+    border-left: 24px solid #000;
+    border-bottom: 16px solid transparent;
+	z-index: 2;
+}
+.pause {
+position: absolute;
+visibility:hidden;
+left:5%;
+    width: 8px;
+    height: 32px;
+    border-right: 8px solid #000;
+    border-left: 8px solid #000;
+	z-index: 2;
+}
+.stop {
+position: absolute;
+left:25%;
+    width: 16px;
+    height: 16px;
+    border: 8px solid #000;
+	background-color: #000;
+	z-index: 2; 
+}
+#temp {
+
+font-size: 20px;
+	z-index: 2; 
+}
+
+.tiempoTit {
+padding-top:2em;
+	z-index: 2; 
+}
+.container2 {
+	padding-top:1.5em;
+	line-height:2em;
+	position: relative;
+	width: 100%;
+	display: none;
+}
+
+#resG{
+	display:none;
+}
+.canv{
+	display:none;
+}
+#botonesFin{
+	display:none;
+}
+
+#files{
+	position:absolute;
+	left: 5%; 
+	top: 10%;
+	padding:1em;
+    width: 80%;
+    height: 80%;
+	display:none;
+	z-index: 4;
+	overflow:auto;
+	background:rgba(255,255,255,1);
+	border: 1px solid #aaaaaa;
+	border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+-webkit-border-radius: 8px 8px 8px 8px;
+border: 2px solid #000000;
+}
+</style>
+</head>
+<body class="" id="grid">
+<div id="wind"></div>
+<div class="browser-landing" id="main">
+    <p align="center">&#9733; Evaluador cuantitativo de intervenciones en asambleas &#9733;</p>
+    <p align="center" id="botonesIni">
+		<button type="button" id="binstruc" onclick="instruc()">Instrucciones</button>
+		<button type="button" id="bcomienza" onclick="comienza()">Nueva Asamblea</button>
+		<button type="button" id="bcarga" onclick="cargarLista()">Cargar Archivo</button>
+		<button type="button" id="bgest" onclick="gestionar()">Gestionar Archivos</button>
+    </p>
+	<div id="instruc">
+	<button type="button" id="instr" onclick="instruc()">Ocultar instruciones</button>
+	<h1>¡Positivímetro!<sup><font size='2'>3.0</font></sup></h1>
+		<b>¿Qué tienes entre manos?</b><br>
+		Positivímetro 3.0 es un programa en formato app (para Android) para realizar análisis cuantitativos de intervenciones en asambleas.<br>
+		La idea original empezó el día en el que la comisión de cuidados del CSOA La Mácula de Madrid decidió cronometrar las intervenciones en una asamblea y hacer un estudio 
+		de género al respecto. La primera versión informatizada (bautizada con algo de sorna "positivímetro" por unx compa de la asamblea, en referencia a que mide más a 
+		quien observa que a lxs observadxs, algo de razón tenía) era un programa escrito en C para Linux con categorías fijas y mucho más limitado en el análisis. No teníamos 
+		otra opción (ni mejores ideas) antes de la era de los smartphones.<br>
+		El propósito del mismo es visibilizar algunas relaciones de poder que suelen darse en los espacios supuestamente horizontales (y que, sin duda, honestamente aspiran 
+		a serlo), para ser motivo de discusión y trabajo grupal. Parafraseando (algo libremente) a Jo Freeman, no por no nombrarlo, deja de existir. Sólo afrontando las 
+		carencias de horizontalidad en nuestros espacios podremos seguir avanzando hacia ella.<br>
+		El núcleo del programa está escrito en JavaScript, lo que automáticamente hace de él un sistema de código abierto, público, evaluable y seguro en términos de troyanos, 
+		puertas traseras u otras amenazas informáticas. El programa hace lo que ves si accedes a la web del proyecto:<br>
+		<hr><b>Qué hace y qué no hace</b><br>
+		Este programa lleva el registro de las intervenciones que se van haciendo a lo largo de una asamblea. Si quien lleva el programa quiere marcar cuáles han sido 
+		interrupciones, también puede hacerlo, haciendo doble click sobre el botón que corresponda. Asimismo, cronometra la duración de la asamblea (permitiendo parar dicha 
+		cuenta por pausas). Al final de la reunión, se pueden especificar hasta 9 categorías (si necesitas más, que no lo creo, haz dos o más análisis sucesivos) 
+		para su posterior análisis (ver ejemplos de uso más abajo).<br>
+		Es importante remarcar que el análisis es cuantitativo, es decir, se computan las variables mencionadas, pero no otras de igual o mayor importancia para el correcto 
+		funcionamiento de una asamblea; el sistema no recoge el tono con el que se hace una intervención, ni si la intervención era un ataque o un cuidado a otra persona, 
+		ni si estaba fuera de lugar (más allá de si era una interrupción o no), ni el impacto que tuvo, ni el rango de quien intervino, etc.<br>
+		No obstante, el mero uso del tiempo público ha guardado hasta ahora (y desgraciadamente todo apunta a que seguirá haciéndolo por un rato más) una evidente correlación 
+		con ciertas diferencias de rango presentes en nuestra cultura, como son las de género, clase social y cultural, nivel de estudios, edad, capacidad mental, veteranía, etc. 
+		Estas son algunas variables que, cuantitativamente, sí pueden ser analizadas y visibilizadas por este programa.
+		<hr><b>Cómo se usa</b><br>
+		Conviene aclarar que la app no necesita ningún recurso online, por lo que puede funcionar de forma totalmente autónoma respecto de internet. Esto facilita la seguridad 
+		de la asamblea, pudiendo poner el ordenador o móvil en modo avión y apagar las conexiones de red.<br>
+		Una vez abierto, aparecerán varios botones:<br>
+		- 'Instrucciones', al que ya le has dado.
+		- 'Nueva Asamblea', que se debe pulsar si se pretende registrar una asamblea. Al hacerlo, nos preguntará si va a ser de grupos o de indivduos. la diferencia es obvia:
+		si se seleccionan individuos, habrá que meter sus identificadores personales y habrá un análisis de usos de tiempos por individuo, amén de por otras categorías que se elijan.
+		Pero a veces nos interesa el comportamiento de todo un grupo, por ejemplo en asambleas entre colectivos, de forma que podemos simplemmente especificar qué grupos
+		participan. Al terminar la asamblea, si hemos elegido esta opción, tendremos que especificar cuánta gente tiene cada grupo.
+		En ambos casos, tendremos que elegir identificadores para las personas o grupos que participan. Se recomienda empezar por unx mismx y meter a la gente que está colocada
+		por la izquierda. Cuando veas los botones en círculo, entenderás por qué. Recuerda que medimos intervenciones de roles, puede haber más identificadores que personas, 
+		por ejemplo, para registrar las intervenciones de moderación.<br>
+		- 'Carga Archivo', que nos permite abrir una asamblea previamente guardada. De la lista, podemos seleccionar la asamblea de prueba (sin encriptar) o las que hayamos
+		guardado, encriptadas. Si intentamos abrir una encriptada, habrá que meter la clave. <b>OJO: si pierdes la clave de una asamblea no hay forma de recuperarla.</b>
+		- 'Borrar archivos', que permite borrar los archivos guardados, menos el de prueba.<br><br>
+		<i>Comienza la asamblea</i><br>
+		Con los botones de 'play', 'pausa' y 'stop' podemos controlar el tiempo. Los botones de las personas particpantes no están habilitados hasta que se pulsa el 'play'.<br>
+		El 'stop' da por finalizada la asamblea.
+		Al acabar la asamblea (la real o la archivada), se podrá elegir entre guardarla (con clave) o analizarla.<br>
+		Si se opta por analizarla, se preguntará cuántas categorías se quieren analizar. Hay que introducir un número o dejarlo en blanco.<br>
+		A continuación, el programa preguntará por los nombres para cada categoría.<br>
+		Tras introducir el último nombre y pulsar 'enter' o darle al botón 'Ok', aparece una tabla. En dicha tabla, la primera columna viene fijada automáticamente por la lista 
+		de IDs que se han introducido. Luego aparecen tantas columnas vacías como categorías se hayan especificado (si se han elegido 'grupos', aparecerá una más llamada 
+		'Población'), con el nombre de cada una encima de ellas.<br>
+		Habrá que introducir algún identificador de cada tipo para cada categoría y persona. Por ejemplo, si una categoría era 'género', para la primera persona de la lista 
+		se puede poner 'q' si es queer (también se puede poner 'queer'), 'm' si es mujer, etc. La columna de 'Población', si aparece, necesita números.<br>
+		Al completar la tabla, se podrá pulsar el botón 'Analizar y obtener resultados'. Este botón desplegará os opciones de visualización: gráfica o en texto.<br>
+		En la versión de texto, veremos los resultados del análisis de la demografía de la asamblea (agregada y desplegada por categorías), de las intervenciones agregadas y 
+		de las intervenciones desplegadas por categorías.<br>
+		En la gráfica, lo mismo pero más bonito.
+		Un detalle que puede desconcertar: la suma de porcentajes de tiempos usados en la asamblea se calcula sobre el tiempo de asamblea, no sobre el tiempo hablado 
+		(entendiendo que un silencio es un tiempo disponible para hablar, que se desdeña), por lo que no siempre dará el 100%, o incluso arrojará resultados negativos.<br>
+		<br><br>
+		Cualquier duda, aclaración, propuesta de mejora o crítica, escribir a sinopinionespropias@gmail.com<br><br>
+		<hr><p align='center'><b>IMPORTANTE</b></p>Aunque el móvil no esté conectado a la red (de telefonía o datos), eso no le impide, con los programas adecuados, grabar el sonido ambiental y por tanto las conversaciones. Hablar de temas delicados o que puedan poner en entredicho la seguridad legal o física de personas afines con un móvil encendido cerca es siempre una mala idea. ¡No les facilites el trabajo!
+		<hr>Que disfrutéis (guiño guiño) de la asamblea.<br>¡Salud!<br><hr>
+		<br><button type="button" id="instr" onclick="instruc()">¡Entendido!</button>
+	</div>
+	<div id="partsOgrupos">
+	¿Quieres registrar intervenciones por individuos o por grupos?<br>
+	<button type="button" id="bgrupos" onclick="grupos()">Grupos</button>
+	<button type="button" id="bind" onclick="indiv()">Individuos</button>
+	</div>
+	<div id="parts">
+	Participantes añadidxs:	<p id="pList"></p>
+	Añadir a: <input type="text" id="valPart" size="10" onkeypress="procesarPart(event)">
+        <br><button type="button" id="proPart" onclick="procesar()">Añadir</button>
+		<button type="button" id="finPart" onclick="finPart()">¡Listo!</button>
+		<div id="existe">¡¡Participante repetidx!!</div>
+	</div>
+	
+	<div id="groups">
+	Grupos añadidos: <p id="gList"></p>
+	Añadir a: <input type="text" id="valGrup" size="10" onkeypress="procesarPart(event)">
+        <br><button type="button" id="proGrup" onclick="procesar()">Añadir</button>
+		<button type="button" id="finPart" onclick="finPart()">¡Listo!</button>
+		<div id="existeG">¡¡Grupo repetido!!</div>
+	</div>
+	
+	<div id="encr">
+	Nombre del fichero: <input type="text" id="nomFich" size="10"/><br>
+	Contraseña: <input type="password" id="passFich" size="10"/><br>
+    <button type="button" id="finFich" onclick="encrypt()">¡Encriptar!</button>
+	</div>
+	
+	<div id="decri">
+	Contraseña: <input type="password" id="passFichD" size="10"/><br>
+	<input type="password" id="contFichD" size="10" style="display:none;"/>
+    <button type="button" id="finFichD" onclick="decrypt()">Abracadabra!</button>
+	</div>
+	
+	<div id="asamblea">
+	<div class="container">Control de tiempos:
+		<div id="play" class="play" onclick="play()"></div>
+		<div id="pause" class="pause" onclick="pause()"></div>		
+		<div id="stop" class="stop" onclick="fin()"></div>
+	</div>
+	<div class="tiempoTit">Tiempo de asamblea:</div>
+		<div id="temp">00:00:00</div>
+	<div id="buttpart" class="container2">Control de intervenciones:<br>
+		
+	</div>
+	</div>
+	<div id="files" class="canv">
+	Lista de asambleas guardadas:<br>
+	<form action="" id="formList">
+	
+	</form>
+	</div>
+    
+    <div id="cats">
+		¿Cuántas categorías quieres analizar?<br> <input id="nc" size="3"/><button onclick="catsOk()">Ok</button>
+	</div>
+	<div id="botonesFin">
+		<button type="button" id="bGuardar" onclick="downloadInt()">Guardar Asamblea</button>
+		<button type="button" id="bAnalizar" onclick="analizarAsamblea()">Analizar Asamblea</button>
+	</div>
+    <div id="tabla"></div>
+    <div id="res"></div>
+	<div id="resG">
+	<div id="analInd">
+	<h2>Análisis individuales</h2><br>
+	<h2 align='center'>Tiempo usado</h2>
+	<canvas id="myChart1" class="canv" width="400" height="400"></canvas>
+	<!--h2 align="center">En %</h2>
+	<canvas id="myChart2" class="canv" width="400" height="400"></canvas-->
+	<h2 align='center'>Intervenciones</h2>
+	<canvas id="myChart2" class="canv" width="400" height="400"></canvas>
+	</div>
+	<div id="analDemo" class="canv"><h2>Análisis demográfico</h2></div>
+	<div id="resGTit0" class="canv"></div>
+	<canvas id="myChart3" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit1" class="canv"></div>
+	<canvas id="myChart4" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit2" class="canv"></div>
+	<canvas id="myChart5" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit3" class="canv"></div>
+	<canvas id="myChart6" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit4" class="canv"></div>
+	<canvas id="myChart7" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit5" class="canv"></div>
+	<canvas id="myChart8" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit6" class="canv"></div>
+	<canvas id="myChart9" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit7" class="canv"></div>
+	<canvas id="myChart10" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit8" class="canv"></div>
+	<canvas id="myChart11" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit9" class="canv"></div>
+	<canvas id="myChart12" class="canv" width="400" height="400"></canvas>
+	
+	<div id="analCats" class="canv"><h2>Análisis por categorías<br></h2>
+	<div id="resGTit10" class="canv"></div>
+	<h2 align='center' id="resGT10" class="canv">Tiempo usado</h2>
+	<canvas id="myChart13" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI10" class="canv">Intervenciones</h2>
+	<canvas id="myChart14" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit11" class="canv"></div>
+	<h2 align='center' id="resGT11" class="canv">Tiempo usado</h2>
+	<canvas id="myChart15" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI11" class="canv">Intervenciones</h2>
+	<canvas id="myChart16" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit12" class="canv"></div>
+	<h2 align='center' id="resGT12" class="canv">Tiempo usado</h2>
+	<canvas id="myChart17" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI12" class="canv">Intervenciones</h2>
+	<canvas id="myChart18" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit13" class="canv"></div>
+	<h2 align='center' id="resGT13" class="canv">Tiempo usado</h2>
+	<canvas id="myChart19" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI13" class="canv">Intervenciones</h2>
+	<canvas id="myChart20" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit14" class="canv"></div>
+	<h2 align='center' id="resGT14" class="canv">Tiempo usado</h2>
+	<canvas id="myChart21" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI14" class="canv">Intervenciones</h2>
+	<canvas id="myChart22" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit15" class="canv"></div>
+	<h2 align='center' id="resGT15" class="canv">Tiempo usado</h2>
+	<canvas id="myChart23" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI15" class="canv">Intervenciones</h2>
+	<canvas id="myChart24" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit16" class="canv"></div>
+	<h2 align='center' id="resGT16" class="canv">Tiempo usado</h2>
+	<canvas id="myChart25" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI16" class="canv">Intervenciones</h2>
+	<canvas id="myChart26" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit17" class="canv"></div>
+	<h2 align='center' id="resGT17" class="canv">Tiempo usado</h2>
+	<canvas id="myChart27" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI17" class="canv">Intervenciones</h2>
+	<canvas id="myChart28" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit18" class="canv"></div>
+	<h2 align='center' id="resGT18" class="canv">Tiempo usado</h2>
+	<canvas id="myChart29" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI18" class="canv">Intervenciones</h2>
+	<canvas id="myChart30" class="canv" width="400" height="400"></canvas>
+	<div id="resGTit19" class="canv"></div>
+	<h2 align='center' id="resGT19" class="canv">Tiempo usado</h2>
+	<canvas id="myChart31" class="canv" width="400" height="400"></canvas>
+	<h2 align='center' id="resGI19" class="canv">Intervenciones</h2>
+	<canvas id="myChart32" class="canv" width="400" height="400"></canvas>
+	</div></div>
+	
+    
+	
+<script>
+var fromFile=false;
+var pausa=false;
+var t_ini;
+var t_iniTot;
+var tTot;
+var time;
+var tAs=0;
+var show=false;
+var date;
+var first=true;
+var tAcc=0;
+var interv = new Array();
+var index=0;
+var listaParts;
+var catName;
+var res;
+var resHTML;
+var numCi;
+var inteNames;
+var matrix;
+var interve;
+var interr;
+var noCats=false;
+var tHablado;
+var visibInstr=false;
+var visibPart=false;
+var listaParts=[];
+var cat;
+var numFiles=0;
+var borrando=false;
+var started=false;
+var group=false;
+
+function cargarLista(){
+	borrando=false;
+	Android.listFiles();
+}
+
+function gestionar(){
+	borrando=true;
+	Android.listFiles();
+	document.getElementById("formList").innerHTML+='<button type="button" onclick="borrar()">Borrar</button>';
+}
+/*function leer(ev) {
+		var res=ev.target.result;
+		console.log(res);
+		document.getElementById('casilla').innerHTML="";
+		if(process(res)) fin();
+	}
+*/
+/*inteNames[i][0]:#interv
+inteNames[i][1]:t total
+inteNames[i][2]:t max
+inteNames[i][3]:#interr hech
+inteNames[i][4]:#interr sufr
+*/
+/*
+interv[index][0]=quien;
+interv[index][1]=tAs;
+interv[index][2]=false;
+*/
+
+function sdNoDisp(){
+	document.getElementById("bGuardar").disabled=true;
+	document.getElementById("bgest").disabled=true;
+	console.log("SD no disponible");
+}
+
+function fileList(txt){
+	//console.log("recibido:"+txt);
+	var fileList=txt.split('¡');
+	document.getElementById("files").style.display="block";
+	document.getElementById("wind").style.display="block";
+	document.getElementById("formList").innerHTML="";
+	for(var i=0;i<fileList.length-1;i++){
+		numFiles++;
+		//console.log("Fichero "+i+":"+fileList[i]);
+		if(borrando)
+			document.getElementById("formList").innerHTML+='<input type="radio" id="r'+i+'" name="r'+i+'" value="'+fileList[i]+'"> '+fileList[i]+'<br>'
+		else
+			document.getElementById("formList").innerHTML+='<input type="radio" id="r'+i+'" name="r" value="'+fileList[i]+'"> '+fileList[i]+'<br>'
+	}
+	if(borrando){
+		document.getElementById("formList").innerHTML+='<button type="button" onclick="borrar()">Borrar</button>';
+		document.getElementById("formList").innerHTML+='<button type="button" onclick="finBorrado()">¡Hecho!</button>';
+	}
+	else document.getElementById("formList").innerHTML+='<button type="button" onclick="sendChoice()">OK</button>';
+	
+}
+
+function sendChoice(){
+	document.getElementById("files").style.display="none";
+	document.getElementById("wind").style.display="none";
+	for(var i=0;i<numFiles;i++)
+		if (document.getElementById('r'+i).checked) {//ojo.....
+			Android.cargarFile(document.getElementById('r'+i).value);
+			//console.log("mandado a Android:"+document.getElementById('r'+i).value);
+		}
+}
+
+function borrar(){
+	document.getElementById("files").style.display="none";
+	document.getElementById("wind").style.display="none";
+	for(var i=0;i<numFiles;i++)
+		if (document.getElementById('r'+i).checked) {
+			Android.deleteFile(document.getElementById('r'+i).value);
+			//console.log("mandado a Android:"+document.getElementById('r'+i).value);
+		}
+	//Android.delete();//borrar files...
+	gestionar();
+}
+
+function finBorrado(){
+	document.getElementById("files").style.display="none";
+	document.getElementById("wind").style.display="none";
+}
+
+function process(txt,ini){
+		document.getElementById('botonesIni').style.display="none";
+		console.log("RECIBIDO: "+txt);
+		if(ini&&txt.indexOf("#$g;")==-1&&txt.indexOf("#$;")==-1){
+			////////////////////////////////////
+			document.getElementById("decri").style.display="block";
+			document.getElementById("wind").style.display="block";
+			document.getElementById("contFichD").value=txt;
+			return;
+		}
+		var arr=txt.split(';');
+		if(txt.indexOf("#$g;")!=-1) group=true;
+		if(txt.indexOf("#$;")!=-1) group=false;
+		if(arr[0].indexOf("#$")>-1){
+			for(var i=1;i<arr.length-1;i++){
+				//console.log("LÍNEA "+i+": "+arr[i]);
+				var each=arr[i].split(':');
+				//console.log(each);
+				interv[i-1] = new Array(3);
+				interv[i-1][0]=each[1];
+				interv[i-1][1]=Number(each[2]);
+				if(each[3]=="true") interv[i-1][2]=true;
+				else interv[i-1][2]=false;
+				//console.log(interv[i-1]);
+				index=Number(each[0]);
+				//tTot=each[3];
+			}
+			t_ini=0;
+			t_iniTot=0;
+			tTot=Number(txt.substring(txt.indexOf('#tt=')+4,txt.indexOf('#ta')));
+			tAs=Number(txt.substring(txt.indexOf('#ta=')+4,txt.indexOf('##')));
+			//console.log("tTot="+tTot+" y tAs="+tAs);
+			fromFile=true;
+			//tAs=tTot;//No, calcular mejor.... Generar una asamblea con pausas y silencios y comprobar
+			started=true;
+			fin();
+		}
+		else{
+			Android.showToast("El archivo seleccionado no es válido. Vuelve a intentarlo (con otro, ¡no insistas con el mismo que no va a funcionar!) o recarga la página para registrar una asamblea.");
+			//document.getElementById('casilla').innerHTML+='<br>Introduce identificador de intervención:<input type="text" id="val" size="2" onkeypress="procesar(event)"><br><p align="left"><button type="button" id="fin" onclick="fin()">Fin</button>';
+			//ver qué más hace falta cambiar de la web...
+			return 0;
+		}
+	}
+
+function decrypt(){
+	document.getElementById("decri").style.display="none";
+	document.getElementById("wind").style.display="none";
+	var str="";
+	try{
+		str=AesCtr.decrypt(document.getElementById("contFichD").value, document.getElementById("passFichD").value, 256);
+		process(str,false);
+		Android.showToast("¡Magia!");
+	}
+	catch(e){
+		console.log("Error desencriptando...");
+		Android.showToast("Contraseña equivocada");
+	}
+	document.getElementById("contFichD").value="";
+	document.getElementById("passFichD").value="";
+}
+
+function instruc(){
+	if(!visibInstr){
+		document.getElementById('instruc').style.display="block";
+		document.getElementById('wind').style.display="block";
+		visibInstr=true;
+	}
+	else{
+		document.getElementById('instruc').style.display="none";
+		document.getElementById('wind').style.display="none";
+		visibInstr=false;
+	}
+}
+
+function procesarPart(e){
+	if(!group) {
+	if(document.getElementById('valPart').value.trim().length>0){
+		//if(!group) document.getElementById('existe').style.display="none";
+		//else document.getElementById('existeG').style.display="none";
+		if(e.keyCode==13){
+			procesar();
+			
+		}
+	}
+	}
+	else{
+		if(document.getElementById('valGrup').value.trim().length>0){
+		//if(!group) document.getElementById('existe').style.display="none";
+		//else document.getElementById('existeG').style.display="none";
+		if(e.keyCode==13){
+			procesar();
+			
+		}
+	}
+	}
+}
+
+function procesar(){
+	//procesar nuevo participante si no está ya en la lista
+			//
+			
+			if(!group){
+			if(document.getElementById('valPart').value.trim().length<=0){
+				document.getElementById('valPart').value="";
+				return;
+			}
+			if(existe(document.getElementById('valPart').value.trim())==1){
+				Android.showToast("Estx participante ya existe!!");//document.getElementById('existe').style.display="block";
+				document.getElementById('valPart').value="";
+				return;
+			}
+			if(document.getElementById('pList').innerHTML.length==0)
+				document.getElementById('pList').innerHTML+=document.getElementById('valPart').value.trim();
+			else
+				document.getElementById('pList').innerHTML+=", "+document.getElementById('valPart').value.trim();
+			listaParts.push(document.getElementById('valPart').value);
+			console.log("Añadiendo a "+document.getElementById('valPart').value.trim());
+			document.getElementById('valPart').value="";
+			}
+			
+			
+			else{
+			if(document.getElementById('valGrup').value.trim().length<=0){
+				document.getElementById('valGrup').value="";
+				return;
+			}
+			if(existe(document.getElementById('valGrup').value.trim())==1){
+				Android.showToast("Este grupo ya existe!!");//document.getElementById('existeG').style.display="block";
+				document.getElementById('valGrup').value="";
+				return;
+			}
+				if(document.getElementById('gList').innerHTML.length==0)
+				document.getElementById('gList').innerHTML+=document.getElementById('valGrup').value.trim();
+			else
+				document.getElementById('gList').innerHTML+=", "+document.getElementById('valGrup').value.trim();
+			listaParts.push(document.getElementById('valGrup').value.trim());
+			console.log("Añadiendo a "+document.getElementById('valGrup').value.trim());
+			document.getElementById('valGrup').value="";
+			}
+}
+
+function existe(part){
+	for(var a in listaParts)
+		if(part==listaParts[a]) return 1;
+	return 0;
+}
+
+function comienza(){
+	document.getElementById('botonesIni').style.display="none";
+	document.getElementById('partsOgrupos').style.display="block";
+	document.getElementById('wind').style.display="block";
+}
+
+function indiv(){
+	group=false;
+	document.getElementById('partsOgrupos').style.display="none";
+	if(!visibPart){
+		document.getElementById('parts').style.display="block";
+		document.getElementById('wind').style.display="block";
+		visibPart=true;
+	}
+	else{
+		document.getElementById('parts').style.display="none";
+		document.getElementById('wind').style.display="none";
+		visibPart=false;
+	}
+}
+function grupos(){
+	group=true;
+	document.getElementById('partsOgrupos').style.display="none";
+	if(!visibPart){
+		document.getElementById('groups').style.display="block";
+		document.getElementById('wind').style.display="block";
+		visibPart=true;
+	}
+	else{
+		document.getElementById('groups').style.display="none";
+		document.getElementById('wind').style.display="none";
+		visibPart=false;
+	}
+}
+
+function finPart(){
+	document.getElementById('parts').style.display="none";
+	document.getElementById('groups').style.display="none";
+	document.getElementById('wind').style.display="none";
+	visibPart=false;
+	document.getElementById('bcomienza').style.display="none";
+	document.getElementById('bcarga').style.display="none";
+	document.getElementById('asamblea').style.display="block";
+	for(var a in listaParts)
+		console.log(listaParts[a]);
+	crearAsamblea();
+}
+
+function crearAsamblea(){
+	var panel=document.getElementById('buttpart');
+	panel.style.display="block";
+	//panel.innerHTML=
+	//if(listaParts.length>)
+	for(var a in listaParts)
+		panel.innerHTML+=placeButton(a,listaParts.length,listaParts[a]);//"<button type='button' id='"+listaParts[a]+"' onclick='inter(\""+listaParts[a]+"\")'>"+listaParts[a]+"</button>";
+}
+
+function placeButton(num,tot,quien){
+	var left;
+	var top;
+	left=50-Math.sin(2*3.14*num/tot)*30;
+	top=Math.cos(2*3.14*num/tot)*150+260;
+	console.log("boton "+num+" de "+tot+" colocado en "+left+", "+top+".");
+	return "<button type='button' id='"+quien+"' disabled style='position:absolute;left:"+left+"%;top:"+top+"%;' onclick='inter(\""+quien+"\")'>"+quien+"</button>";
+}
+
+var lastClick=0;
+var lastQuien="";
+function inter(quien){
+	if(quien==lastQuien){
+		if(Date.now()<lastClick+300){
+			console.log("Interrumpió:"+quien);
+			index--;
+			interv[index][2]=true;
+			index++;
+			document.getElementById(quien).style.boxShadow = "3px 3px 8px orange";
+		}
+		else{
+			console.log("Terminó de hablar:"+quien);
+			lastQuien="";
+			interv[index]=new Array(3);
+			interv[index][0]="";
+			interv[index][1]=tAs;
+			interv[index][2]=false;
+			index++;
+			document.getElementById(quien).style.boxShadow = "3px 3px 8px white";
+		}
+	}
+	else{
+		console.log("Intervino:"+quien);
+		if(lastQuien!="") document.getElementById(lastQuien).style.boxShadow = "3px 3px 8px white";
+		lastQuien=quien;
+		interv[index]=new Array(3);
+		interv[index][0]=quien;
+		interv[index][1]=tAs;
+		interv[index][2]=false;
+		index++;
+		document.getElementById(quien).style.boxShadow = "3px 3px 8px green";
+		
+	}
+	lastClick=Date.now();
+}
+
+function play(){
+	started=true;
+	console.log("play!!");
+	enableButtons(false);
+	document.getElementById('play').style.visibility="hidden";
+	document.getElementById('pause').style.visibility="visible";
+	comienza2();
+}
+
+function pause(){
+	console.log("pause!!");
+	enableButtons(true);
+	document.getElementById('pause').style.visibility="hidden";
+	document.getElementById('play').style.visibility="visible";
+	comienza2();
+}
+
+function enableButtons(val){
+	for(var a in listaParts)
+		document.getElementById(listaParts[a]).disabled=val;
+}
+
+function createTable(num_rows,catName){
+	var len=catName.length;
+	if(noCats) len=0;
+    var theader = '<table border="0" id="tabla">\n';
+    var tbody = '';
+	console.log("Tabla de "+num_rows+"x"+len);
+    for( var i=0; i<num_rows+1;i++)
+    {
+        tbody += '<tr>';
+        for( var j=0; j<len+1;j++)
+        {
+			if(i==0){
+				//console.log("i=0");
+				if(j==0){
+					//console.log("i=0 y j=0");
+					tbody += '<td>';
+					if(!group) tbody += '<b>Nombre</b>';
+					else tbody += '<b>Grupo</b>';
+					tbody += '</td>'
+				}
+				else{
+					//console.log("i=0 y j="+j);
+					tbody += '<td>';
+					tbody += '<b>'+catName[j-1]+'</b>';
+					tbody += '</td>'
+				}
+			}
+			else{
+				if(j==0){
+					tbody += '<td>';
+					tbody += listaParts[i-1];
+					tbody += '</td>'
+				}
+				else{
+					tbody += '<td>';
+					tbody += '<input type="text" id="num' + (i-1) + ',' +(j-1)+'" size="4"> ';
+					//console.log('Generando casilla:num' + (i-1) + ',' +(j-1));
+					tbody += '</td>'
+				}
+			}
+        }
+        tbody += '</tr>\n';
+    }
+    var tfooter = '</table>';
+    document.getElementById('tabla').innerHTML += "<div id='tab'>"+theader + tbody + tfooter+"</div>";
+	document.getElementById('tabla').innerHTML +='<button type="button" id="result" onclick="anal()">Analizar y obtener resultados</button>';
+}
+
+function comienza2(){
+	//console.log("Pausa Comienza:"+pausa);
+	if(first){
+		date=new Date();
+		first=false;
+		t_ini=date.getTime();
+		t_iniTot=t_ini;
+		document.getElementById('temp').innerHTML = msToTime(tAs);
+		time=setInterval(function(){printTemp();}, 1000);
+	}
+	else{
+		if(!pausa){
+			pausa=true;
+			tAcc=tAs;
+		}
+		else{
+			date=new Date();
+			t_ini=date.getTime();
+			pausa=false;
+		}
+	}
+}
+
+function printTemp(){
+	//console.log("Pausa setInt:"+pausa);
+	if(!pausa){
+		var now=new Date();
+		//console.log("antes");
+		tAs=now.getTime()-t_ini+tAcc;
+		//console.log("Actualizar tiempo:"+t_ini+" y ahora:"+date.getTime());
+	}
+	document.getElementById('temp').innerHTML = msToTime(tAs);
+
+}
+
+function msToTime(duration) {
+        var seconds = parseInt((duration/1000)%60)
+            , minutes = parseInt((duration/(1000*60))%60)
+            , hours = parseInt((duration/(1000*60*60))%24);
+
+        hours = (hours < 10) ? "0" + hours : hours;
+        minutes = (minutes < 10) ? "0" + minutes : minutes;
+        seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+        return hours + ":" + minutes + ":" + seconds;
+}
+
+function fin(){
+	if(!started) return;
+	document.getElementById("asamblea").style.display="none";
+	
+	clearInterval(time);
+	var now=new Date();
+	noCats=false;
+	if(fromFile==false){
+		tTot=now.getTime()-t_iniTot;
+		num=listaParts.length;
+	}
+	else{
+		getNames();
+	}
+	document.getElementById('res').innerHTML = "<hr>Tiempo total: "+msToTime(tTot)+"<br>Tiempo de asamblea: "+msToTime(tAs);
+	
+	if(listaParts.length==0){
+		document.getElementById('res').innerHTML +="<br>No se han registrado intervenciones, el programa ha terminado.";
+		return;
+	}
+	document.getElementById("botonesFin").style.display="block";
+}
+
+function getNames(){
+	names=new Array();
+	num=0;
+	for(var i=0;i<interv.length;i++){
+		//console.log(interv[i]);
+		if(interv[i][0].length>0) setName(interv[i][0]);
+	}
+	num=names.length;
+	listaParts=names;
+	//console.log(names+" y length interv="+interv.length);
+}
+
+function setName(name){
+	//console.log("Buscando "+name+" en "+names);
+	for(var i=0;i<names.length;i++)
+		if(name==names[i]) return;
+	names[names.length]=name;
+	//console.log("Añadido. Ahora names="+names);
+}
+
+function analizarAsamblea(){
+	document.getElementById("cats").style.display="block";
+	document.getElementById("wind").style.display="block";
+}
+
+function catsOk(){
+	
+	cat = document.getElementById("nc").value;
+	if(Number(cat)=="NaN"){
+		Android.showToast("Mete un número anda...");
+		document.getElementById("nc").value="";
+	}
+	if(!group&&cat>9||group&&cat>8){
+		if(group) Android.showToast("No se permiten más de 8 categorías");
+		else Android.showToast("No se permiten más de 9 categorías");
+		document.getElementById("nc").value="";
+		return;
+	}
+	//console.log("Cat:"+cat);
+	if((cat==undefined||cat=="")&&!group){
+		noCats=true;
+		document.getElementById("cats").style.display="none";
+		document.getElementById("wind").style.display="none";
+		document.getElementById('res').innerHTML +="<br>El análisis no tendrá en cuenta categoría alguna.<br>";
+		anal();//document.getElementById('res').innerHTML +='<button type="button" id="result" onclick="anal()">Analizar y obtener resultados</button>';
+		return;
+	}
+	if(group) cat++;
+	catName=new Array(cat);
+	document.getElementById("cats").innerHTML="";
+	if(!group)
+		for(var i=0;i<cat;i++)
+			document.getElementById("cats").innerHTML+="Nombre cat. "+(i+1)+": <input id='cat"+(i+1)+"'/><br>";
+	else
+		for(var i=0;i<cat-1;i++)
+			document.getElementById("cats").innerHTML+="Nombre cat. "+(i+1)+": <input id='cat"+(i+1)+"'/><br>";
+	if(!(group&&cat==1)) document.getElementById("cats").innerHTML+="<br><button onclick='catsOk2()'>Ok</button>";
+	else catsOk2();
+}
+
+function catsOk2(){
+	if(!group)
+		for(var i=0;i<cat;i++)
+			catName[i]=document.getElementById("cat"+(i+1)).value;
+	else{
+		catName[0]="Población";
+		for(var i=1;i<cat;i++)
+			catName[i]=document.getElementById("cat"+(i)).value;
+	}
+	createTable(num,catName);
+	document.getElementById("cats").style.display="none";
+	document.getElementById("wind").style.display="none";
+}
+
+function setTable(){
+	var len=matrix[0].length;
+	if(noCats) len=0;
+	var theader = '<table border="0" id="tabla2">\n';
+    var tbody = '';
+	//console.log("Tabla de "+num_rows+"x"+len);
+    for( var i=0; i<matrix.length+1;i++)
+    {
+        tbody += '<tr>';
+        for( var j=0; j<len+1;j++)
+        {
+			if(i==0){
+				//console.log("i=0");
+				if(j==0){
+					//console.log("i=0 y j=0");
+					tbody += '<td>';
+					if(!group) tbody += '<b>Nombre</b>';
+					else tbody += '<b>Grupo</b>';
+					tbody += '</td>'
+				}
+				else{
+					//console.log("i=0 y j="+j);
+					tbody += '<td>';
+					tbody += '<b>'+catName[j-1]+'</b>';
+					tbody += '</td>'
+				}
+			}
+			else{
+				if(j==0){
+					tbody += '<td>';
+					tbody += listaParts[i-1];
+					tbody += '</td>'
+				}
+				else{
+					tbody += '<td>';
+					tbody += '<input type="text" size="4" value="'+matrix[i-1][j-1]+'">';
+					//console.log('Generando casilla:num' + (i-1) + ',' +(j-1));
+					tbody += '</td>'
+				}
+			}
+        }
+        tbody += '</tr>\n';
+    }
+    var tfooter = '</table>';
+    //document.getElementById('tab').innerHTML = theader + tbody + tfooter;
+}
+
+var cabeceraRes="<br><hr><h1>RESULTADOS</h1><hr><br><div id='butsRes'><button onclick='pgraphs()'>Mostrar en gráficos</button>&nbsp<button onclick='texto()'>Mostrar en texto</button></div>";
+var textoRes="";
+function anal(){
+	document.getElementById('tabla').style.display="none";
+	document.getElementById('botonesFin').style.display="none";
+	if(!group) res="<b>Demografía</b><br>"+num+" personas en la asamblea.<br>";
+	else res="<b>Demografía</b><br>"+num+" grupos en la asamblea.<br>";
+	if(!noCats) res+=analCats();
+	res+=analInterv();
+	if(!noCats) res+=analIntCat();
+	if(!noCats) setTable();
+	document.getElementById('res').innerHTML=cabeceraRes;
+	textoRes=toText(res);
+}
+
+var textOn=false;
+var graphOn=false;
+function texto(){
+	if(graphOn){
+		graphOn=false;
+		document.getElementById('resG').style.display="none";
+	}
+	if(textOn){
+		document.getElementById('res').innerHTML=cabeceraRes;
+		textOn=false;
+		return;
+	}
+	textOn=true;
+	document.getElementById('res').innerHTML=cabeceraRes;
+	document.getElementById('res').innerHTML +='<br>'+res+'<br>';//<button type="button" id="downInt" onclick="downloadInt()">Descargar intervenciones</button><button type="button" id="downRes" onclick="downloadRes()">Descargar resultados</button>';
+	
+}
+
+function pgraphs(){
+	if(graphOn){
+		graphOn=false;
+		document.getElementById('resG').style.display="none";
+		document.getElementById('res').innerHTML=cabeceraRes;
+		textOn=false;
+		return;
+	}
+	graphOn=true;
+	textOn=false;
+	document.getElementById('resG').style.display="block";
+	document.getElementById('res').innerHTML=cabeceraRes;
+	//document.getElementById('resG').innerHTML+="<h2>Análisis individuales</h2><br>";
+	/*
+	inteNames[i][0]:#interv
+	inteNames[i][1]:t total
+	inteNames[i][2]:t max
+	inteNames[i][3]:#interr hech
+	inteNames[i][4]:#interr sufr
+	inteNames[i][5]:t interrump
+	*/
+
+	var dat=[];
+	var datI=[];
+	var dif=[];
+	var ordenadas;
+	var datIH=[];
+	var datIS=[];
+	var nn;
+	
+	if(!group){
+	for(var i in inteNames){
+		dat[i]=inteNames[i][1]/1000;
+		datI[i]=inteNames[i][5]/1000;
+		dif[i]=Math.round((100*(inteNames[i][1]+inteNames[i][5])/tAs)-(100/listaParts.length));
+	}
+	//ordenar de mayor a menor
+	
+	ordenadas=ordenar(dat,datI,listaParts,dif);
+	dat=getColumn(ordenadas,1);
+	datI=getColumn(ordenadas,2);
+	nn=getColumn(ordenadas,3);
+	dif=getColumn(ordenadas,4);
+	graphsTBar(dat,datI,nn,1,dif);
+	
+	//graphs(dat,noms,2,"",1,dif);
+
+	dat=[];
+	dif=[];
+	
+	for(var i in inteNames){
+		dat[i]=inteNames[i][0];
+		datIH[i]=inteNames[i][3];
+		datIS[i]=inteNames[i][4];
+		dif[i]=Math.round((100*inteNames[i][0]/interve)-(100/listaParts.length));
+		}
+	ordenadas=ordenarInt(dat,datIH,datIS,listaParts,dif);
+	dat=getColumn(ordenadas,1);
+	datIH=getColumn(ordenadas,2);
+	datIS=getColumn(ordenadas,3);
+	nn=getColumn(ordenadas,4);
+	dif=getColumn(ordenadas,5);
+	graphsBar(dat,datIH,datIS,nn,2,dif);
+	}
+	else document.getElementById('analInd').style.display="none";
+	
+	//Análisis demográfico;
+	if(!window.catName){
+		document.getElementById('analDemo').style.display="none";
+		document.getElementById('analCats').style.display="none";
+		return;
+	}
+	else{
+		document.getElementById('analDemo').style.display="block";
+		document.getElementById('analCats').style.display="block";
+	}
+	var l=catName.length;
+	if(l>9) l=9;
+	for(var i=0;i<l;i++){
+		findCats(i);//genera numCi
+		numCatsi=numCi.length;
+		var noms=[];
+		for(var j=0;j<numCatsi;j++)
+			noms[j]=numCi[j];
+		var datCat=[];
+		for(var j=0;j<numCatsi;j++)
+			datCat[j]=prop(j,i);
+		document.getElementById('resGTit'+i).innerHTML+="<h2 align='center'>Para la categoría <b>\""+catName[i]+"\"</b></h2><br>";
+		document.getElementById('resGTit'+i).style.display="block";
+		graphs(datCat,noms,3+i,"",0,[]);
+	}
+
+	//Análisis por categorías
+	//disponible la X canvas...
+	
+	var sumCi;
+	for(var i=0;i<inteNames.length;i++) console.log("inteNames["+i+"]="+inteNames[i]);
+	for(var i=0;i<catName.length;i++){
+		findCats(i);
+		sumCi=new Array(numCi.length);
+		document.getElementById('resGTit'+(10+i)).innerHTML+="<h2 align='center'>Según '"+catName[i]+"'</h2>";
+		document.getElementById('resGTit'+(10+i)).style.display="block";
+		document.getElementById('resGT'+(10+i)).style.display="block";
+		for(var j=0;j<numCi.length;j++){
+			sumCi[j]=new Array(7);
+			for(var h=0;h<7;h++) sumCi[j][h]=0;
+			
+			if(!group){
+			for(var k=0;k<num;k++)
+				if(matrix[k][i]==numCi[j]){
+				
+					/*
+					inteNames[i][0]:#interv
+					inteNames[i][1]:t total
+					inteNames[i][2]:t max
+					inteNames[i][3]:#interr hech
+					inteNames[i][4]:#interr sufr
+					inteNames[i][5]:t interrump
+					*/
+					sumCi[j][0]+=inteNames[k][0];
+					sumCi[j][1]+=inteNames[k][1];
+					sumCi[j][2]+=inteNames[k][2];//sumando intervenciones máximas... ¿?
+					sumCi[j][3]+=inteNames[k][3];
+					sumCi[j][4]+=inteNames[k][4];
+					sumCi[j][5]+=inteNames[k][5];
+				}
+			}
+			else{
+				if(i==0){
+					
+				
+					/*
+					inteNames[i][0]:#interv
+					inteNames[i][1]:t total
+					inteNames[i][2]:t max
+					inteNames[i][3]:#interr hech
+					inteNames[i][4]:#interr sufr
+					inteNames[i][5]:t interrump
+					*/
+							sumCi[j][0]=inteNames[j][0];
+							sumCi[j][1]=inteNames[j][1];
+							sumCi[j][2]=inteNames[j][2];//sumando intervenciones máximas... ¿?
+							sumCi[j][3]=inteNames[j][3];
+							sumCi[j][4]=inteNames[j][4];
+							sumCi[j][5]=inteNames[j][5];
+							sumCi[j][6]=inteNames[j][6];
+					
+				}
+				else{
+				for(var k=0;k<num;k++)
+				if(matrix[k][i]==numCi[j]){
+				
+					/*
+					inteNames[i][0]:#interv
+					inteNames[i][1]:t total
+					inteNames[i][2]:t max
+					inteNames[i][3]:#interr hech
+					inteNames[i][4]:#interr sufr
+					inteNames[i][5]:t interrump
+					*/
+					sumCi[j][0]+=inteNames[k][0];
+					sumCi[j][1]+=inteNames[k][1];
+					sumCi[j][2]+=inteNames[k][2];//sumando intervenciones máximas... ¿?
+					sumCi[j][3]+=inteNames[k][3];
+					sumCi[j][4]+=inteNames[k][4];
+					sumCi[j][5]+=inteNames[k][5];
+					sumCi[j][6]+=inteNames[k][6];
+					console.log("sumando población de inteNames["+k+"]:"+inteNames[j][6]+" a sumCi["+j+"]="+sumCi[j][6])
+				}
+				}
+			}
+		}
+		var dat=[];
+		var datI=[];
+		var dif=[];
+		
+		for(var j in sumCi){
+		console.log("sumCi["+j+"]="+sumCi[j]);
+			dat[j]=sumCi[j][1]/1000;
+			datI[j]=sumCi[j][5]/1000;
+			if(!group) dif[j]=Math.round((100*(sumCi[j][1]+sumCi[j][5])/tAs)-(100/numCi.length));
+			else{
+				if(i==0) dif[j]=Math.round((100*(sumCi[j][1]+sumCi[j][5])/tAs)-(prop(j,i)));
+				else dif[j]=Math.round((100*(sumCi[j][1]+sumCi[j][5])/tAs)-(100*sumCi[j][6]/tot));
+				}
+		}
+		//ordenar de mayor a menor
+		var ordenadas;
+		if(group&&i==0) ordenadas=ordenar(dat,datI,listaParts,dif);
+		else ordenadas=ordenar(dat,datI,numCi,dif);
+		dat=getColumn(ordenadas,1);
+		datI=getColumn(ordenadas,2);
+		var nn=getColumn(ordenadas,3);
+		dif=getColumn(ordenadas,4);
+		graphsTBar(dat,datI,nn,13+2*i,dif);
+		
+		//graphs(dat,noms,2,"",1,dif);
+		document.getElementById('resGI'+(10+i)).style.display="block";
+		dat=[];
+		dif=[];
+		var datIH=[];
+		var datIS=[]
+		for(var j in sumCi){
+			dat[j]=sumCi[j][0];
+			datIH[j]=sumCi[j][3];
+			datIS[j]=sumCi[j][4];
+			if(!group) dif[j]=Math.round((100*sumCi[j][0]/interve)-(100/numCi.length));
+			else{
+				if(i==0) dif[j]=Math.round((100*sumCi[j][0]/interve)-(prop(j,0)));
+				else dif[j]=Math.round((100*sumCi[j][0]/interve)-(100*sumCi[j][6]/tot));
+			}
+		}
+		var ordenadas;
+		if(group&&i==0) ordenadas=ordenarInt(dat,datIH,datIS,listaParts,dif);
+		else ordenadas=ordenarInt(dat,datIH,datIS,numCi,dif);
+		dat=getColumn(ordenadas,1);
+		datIH=getColumn(ordenadas,2);
+		datIS=getColumn(ordenadas,3);
+		var nn=getColumn(ordenadas,4);
+		dif=getColumn(ordenadas,5);
+		graphsBar(dat,datIH,datIS,nn,14+2*i,dif);
+	}
+}
+
+function ordenar(dat,datI,lista,dif){
+	var nueva=[];
+	for(var i=0;i<lista.length;i++){
+		nueva[i]=new Array(5);
+		nueva[i][0]=dat[i]+datI[i];
+		nueva[i][1]=dat[i];
+		nueva[i][2]=datI[i];
+		nueva[i][3]=lista[i];
+		nueva[i][4]=dif[i];
+	}
+	//console.log(nueva);
+	nueva.sort(sortFunction);
+	//console.log(nueva);
+	return nueva;
+}
+
+function ordenarInt(dat,datIH, datIS,lista,dif){
+	var nueva=[];
+	for(var i=0;i<lista.length;i++){
+		nueva[i]=new Array(6);
+		nueva[i][0]=dat[i]+datIH[i]-datIS[i];
+		nueva[i][1]=dat[i];
+		nueva[i][2]=datIH[i];
+		nueva[i][3]=datIS[i];
+		nueva[i][4]=lista[i];
+		nueva[i][5]=dif[i];
+	}
+	
+	nueva.sort(sortFunction);
+	//console.log(nueva);
+	return nueva;
+}
+
+function sortFunction(a, b) {
+    if (a[0] === b[0]) {
+        return 0;
+    }
+    else {
+        return (a[0] < b[0]) ? 1 : -1;
+    }
+}
+
+function getColumn(arr,col){
+	var arrN=new Array(arr.length);
+	for(var i=0;i<arrN.length;i++)
+		arrN[i]=arr[i][col];
+	return arrN;
+}
+
+var colors = [
+	'rgb(255, 59, 52)',//rojo
+	'rgb(255, 159, 64)',//naranja
+	'rgb(205, 155, 46)',//amarillo
+	'rgb(75, 212, 72)',//verde
+	'rgb(54, 162, 235)',//azul
+	'rgb(24, 82, 135)',//azul oscuro
+	'rgb(153, 102, 255)',
+	'rgb(201, 153, 207)',
+	'rgb(255, 20, 12)',
+	'rgb(75, 152, 52)',
+	'rgb(101, 103, 107)',
+	'rgb(50, 0, 150)',
+	'rgb(10, 10, 10)', //negro, 12
+	'rgb(0, 160, 250)',
+	'rgb(100, 90, 190)',
+	'rgb(0, 130, 180)',
+	'rgb(90, 180, 100)',
+	'rgb(150, 180, 130)',
+	'rgb(0, 0, 130)',
+];
+
+function perone(data){
+	var dataPO=new Array(data.length);
+	var total=0;
+	for(var i=0;i<data.length;i++){
+		total+=data[i];
+	}
+	for(var i=0;i<data.length;i++){
+		dataPO[i]=data[i]/(10*total);
+	}
+	return dataPO;
+}
+
+function perDif(data){
+	var dataPO=new Array(data.length);
+	for(var i=0;i<data.length;i++){
+		dataPO[i]=data[i]/(1000);
+	}
+	return dataPO;
+}
+
+function graphsTBar(data,datI,nom,a,difer){
+	document.getElementById("myChart"+a).style.display="block";
+	var ctx = document.getElementById("myChart"+a).getContext('2d');
+	
+	var barChartData = { //líneas 12758 y ss. para bubble y 15138 y ss. para legend y 15231
+            labels: nom,
+            datasets: [{
+                label: 'Tiempo intervenido',
+                backgroundColor: colors[3],
+                data: data,
+            },
+				{
+                label: 'Proporción intervenido',
+                backgroundColor: colors[3],
+                data: perone(data),
+            },
+				{
+                label: 'Dif. con la media',
+                backgroundColor: colors[3],
+                data: perDif(difer),
+            },
+			{
+                label: 'Tiempo interrumpiendo',
+                backgroundColor: colors[0],
+                data: datI
+            },
+			{
+                label: 'Proporción interrumpiendo',
+                backgroundColor: colors[0],
+                data: perone(datI),
+            }
+			]
+        };
+
+	var config={
+        type: 'bar',
+        data: barChartData,
+        options: {
+             tooltips: {
+                mode: 'index',
+                intersect: false
+            },
+            responsive: true,
+				scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+                    yAxes: [{
+                        stacked: true,
+						ticks: {
+							beginAtZero: true,
+							callback: function(value) {if (value % 1 === 0) {return value;}}
+						}
+                    }]
+                },
+		}
+	};                
+
+	var myPieChart = new Chart(ctx,config);
+}
+
+function graphsBar(dataV,dataIH,dataIS,nom,a,difer){
+	document.getElementById("myChart"+a).style.display="block";
+	var ctx = document.getElementById("myChart"+a).getContext('2d');
+	var barChartData = {
+            labels: nom,
+            datasets: [{
+                label: 'Intervenciones',
+                backgroundColor: colors[3],
+                data: dataV
+            }, {
+                label: 'Propor. de intervenciones',
+                backgroundColor: colors[3],
+                data: perone(dataV)
+            }, {
+                label: 'Dif. con la media',
+                backgroundColor: colors[3],
+                data: perDif(difer)
+            }, {
+                label: 'Interrupciones hechas',
+                backgroundColor: colors[0],
+                data: dataIH
+            }, {
+                label: 'Propor. interrupciones hechas',
+                backgroundColor: colors[0],
+                data: perone(dataIH)
+            }, {
+                label: 'Interrupciones sufridas',
+                backgroundColor: colors[12],
+                data: dataIS
+            },{
+                label: 'Propor. interrupciones sufridas',
+                backgroundColor: colors[12],
+                data: perone(dataIS)
+            }]
+
+        };
+	var config={
+		type: 'bar',
+        data: barChartData,
+        options: {
+            /*title:{
+                display:true,
+                text:"Chart.js Bar Chart - Stacked"
+            },*/
+            tooltips: {
+                mode: 'index',
+                intersect: false
+            },
+            responsive: true,
+				scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+                    yAxes: [{
+                        stacked: true,
+						ticks: {
+							beginAtZero: true,
+							callback: function(value) {if (value % 1 === 0) {return value;}}
+						}
+                    }]
+                },
+		}               
+	}; 
+
+	var myPieChart = new Chart(ctx,config);
+}
+
+function graphs(datos,nom,a,units,pc,difer){
+	document.getElementById("myChart"+a).style.display="block";
+	var ctx = document.getElementById("myChart"+a).getContext('2d');
+	var randomScalingFactor = function() {
+        return Math.round(Math.random() * 100);
+    };
+	var config = {
+        type: 'pie',
+        data: {
+            datasets: [{
+                data: datos,
+                backgroundColor: getRandColors(datos.length),
+                //label: 'Dataset 1'
+            }],
+            //labels: nom
+        },
+        options: {
+            events: false,
+	animation: {
+    duration: 500,
+    easing: "easeOutQuart",
+    onComplete: function () {
+      var ctx = this.chart.ctx;
+      ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+
+      this.data.datasets.forEach(function (dataset) {
+
+        for (var i = 0; i < dataset.data.length; i++) {
+          var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+              total = dataset._meta[Object.keys(dataset._meta)[0]].total,
+              mid_radius = model.innerRadius + (model.outerRadius - model.innerRadius)/2,
+              start_angle = model.startAngle,
+              end_angle = model.endAngle,
+              mid_angle = start_angle + (end_angle - start_angle)/2;
+
+          var x = mid_radius * Math.cos(mid_angle);
+          var y = mid_radius * Math.sin(mid_angle);
+
+          ctx.fillStyle = '#fff';
+          //if (i == 3){ // Darker text color for lighter background
+          //  ctx.fillStyle = '#000';
+          //}
+		  ctx.fillText("'"+nom[i]+"'", model.x + x, model.y + y-12);
+		  if(pc==0) ctx.fillText(dataset.data[i]+"%", model.x + x, model.y + y);
+		  else ctx.fillText(dataset.data[i]+units, model.x + x, model.y + y);
+		  if(pc==1){
+			if(difer.length>0){
+				var difStr="";
+				if(difer[i]<0) difStr= "("+difer[i]+"%)";
+				else difStr = "(+"+difer[i]+"%)";
+				var percent = String(Math.round(dataset.data[i]/total*100)) + "% "+difStr+"";
+				//ctx.fillText(dataset.data[i], model.x + x, model.y + y);
+				// Display percent in another line, line break doesn't work for fillText
+				ctx.fillText(percent, model.x + x, model.y + y + 12);
+			}
+			else{
+				var percent = String(Math.round(dataset.data[i]/total*100)) + "%";
+				//ctx.fillText(dataset.data[i], model.x + x, model.y + y);
+				// Display percent in another line, line break doesn't work for fillText
+				ctx.fillText(percent, model.x + x, model.y + y + 12);
+			}
+		  }
+		  else{
+			
+			if(difer.length>0){
+				var difStr="";
+				if(difer[i].indexOf("-")!=0) difStr= "("+difer[i]+")";
+				else difStr = "(+"+difer[i]+")";
+				
+				// Display percent in another line, line break doesn't work for fillText
+				ctx.fillText(difStr, model.x + x, model.y + y + 12);
+			}
+		  }
+        }
+      });               
+    }
+  }
+        }
+    };
+	
+	var myPieChart = new Chart(ctx,config);
+	
+}
+
+function getRandColors(n){
+	var result = new Array(n),
+        len = colors.length,
+        taken = new Array(len);
+    if (n > len)
+        throw new RangeError("getRandom: more elements taken than available");
+    while (n--) {
+        var x = Math.floor(Math.random() * len);
+        result[n] = colors[x in taken ? taken[x] : x];
+        taken[x] = --len;
+    }
+    return result;
+}
+
+function findCats(i){
+	numCi=new Array();
+	var guardar=true;
+	for(var j=0;j<num;j++){
+		guardar=true;
+		var cij;
+		if(group&&i==0) cij=Number(document.getElementById('num'+j+','+i).value);
+		else cij=document.getElementById('num'+j+','+i).value;
+		matrix[j][i]=cij;
+		console.log('Accediendo a la casilla: num'+j+','+i+' que tiene:'+cij);
+		if(group&&i==0){
+			numCi[j]=listaParts[j];
+		}
+		else{
+			for(var k=0;k<numCi.length;k++){
+			console.log("Analizando:"+cij+" en "+numCi);
+			if(numCi[k]==cij) {guardar=false;break;}
+		}
+		if(guardar){
+			numCi[numCi.length]=cij;
+			console.log("Guardando:"+cij+" en "+numCi);
+		}
+		}
+	}
+	//Falta análisis de correlaciones... Asignar número a cada tipo de cada categoría antes, los que no sean núm.
+	console.log("Hay "+numCi.length+" tipos de "+catName[i]+": "+numCi);
+}
+
+function analCats(){
+	var res="Por categorías:<br>";
+	matrix=new Array(num);
+	for(var i=0;i<num;i++) matrix[i]=new Array(catName.length);
+	for(var i=0;i<catName.length;i++){
+		findCats(i);//genera numCi
+		numCatsi=numCi.length;
+		if(numCatsi==1) res+="&nbsp;&nbsp;&nbsp;&nbsp;- Hay "+numCatsi+" tipo de <b>"+catName[i]+"</b>: ";
+		else res+="&nbsp;&nbsp;&nbsp;&nbsp;- Hay "+numCatsi+" tipo(s) de <b>"+catName[i]+"</b>: ";
+		for(var j=0;j<numCi.length;j++)
+			res+=numCi[j]+" ";
+		res=res.substr(0,res.length-1)+".<br>";
+		for(var j=0;j<numCi.length;j++){
+			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;"'+numCi[j]+'" representa el '+prop(j,i)+'% de la población.<br>';
+		}
+		res+="<br>";
+	}
+	return res;
+}
+
+function analInterv(){
+	var res="";
+	res="<hr>&#9733; <b>Análisis de intervenciones</b><br>";
+	interve=0;
+	interr=0;
+	tHablado=0;
+	inteNames=new Array(listaParts.length);
+	for(var i=0;i<listaParts.length;i++){
+		inteNames[i]=new Array(7);//#interve, tIntervTot, tIntervMax, #interrHechas, #interrSufridas, t interrump, pobl
+		for(var j=0;j<7;j++)
+			inteNames[i][j]=0;
+	}
+	console.log("Analisis de intervenciones");
+	
+	for(var i=0;i<index;i++){
+		console.warn(interv[i]);
+		if(interv[i][0].length>0){
+			interve++;
+			console.log("interve++ y ya:"+interve);
+			inteNames[listaParts.indexOf(interv[i][0])][0]++;
+			console.log("Intervencion de "+listaParts[listaParts.indexOf(interv[i][0])]);
+
+		}
+		if(interv[i][2]){
+			interr++;
+			//inteNames[listaParts.indexOf(interv[i][0])][0]++;
+			inteNames[listaParts.indexOf(interv[i][0])][3]++;
+			if(i>0){
+				inteNames[listaParts.indexOf(interv[i-1][0])][4]++;
+				console.log("intentando acceder a indexOf("+interv[i-1][0]+") en listaParts:"+listaParts);
+			}
+			console.log("Interrupcion de "+listaParts[listaParts.indexOf(interv[i][0])]+" y ya van "+inteNames[listaParts.indexOf(interv[i][0])][3]+" a "+listaParts[listaParts.indexOf(interv[i-1][0])]+" que lleva sufridas "+inteNames[listaParts.indexOf(interv[i-1][0])][4]);
+		}
+		if(i<(index-1)){
+			if(interv[i][0].length>0){
+				if(!interv[i][2]){
+					inteNames[listaParts.indexOf(interv[i][0])][1]+=interv[i+1][1]-interv[i][1];
+					console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][1]+"s de interv");
+					}
+				else{
+					inteNames[listaParts.indexOf(interv[i][0])][5]+=interv[i+1][1]-interv[i][1];
+					console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][5]+"s de interrup");
+					}
+				
+				if(inteNames[listaParts.indexOf(interv[i][0])][2]<interv[i+1][1]-interv[i][1])
+					inteNames[listaParts.indexOf(interv[i][0])][2]=interv[i+1][1]-interv[i][1];
+				console.log(listaParts[listaParts.indexOf(interv[i][0])]+" tiene como intMax "+inteNames[listaParts.indexOf(interv[i][0])][2]+"s");
+			}
+		}
+		else {
+			if(interv[i][0].length>0){
+				if(!interv[i][2]){
+					inteNames[listaParts.indexOf(interv[i][0])][1]+=tTot-interv[i][1];
+					console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][1]+"s de interv");
+				}
+				else{
+					inteNames[listaParts.indexOf(interv[i][0])][5]+=tTot-interv[i][1];
+					console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][5]+"s de interv");
+				}
+				if(inteNames[listaParts.indexOf(interv[i][0])][2]<tTot-interv[i][1])
+					inteNames[listaParts.indexOf(interv[i][0])][2]=tTot-interv[i][1];
+				console.log(listaParts[listaParts.indexOf(interv[i][0])]+" tiene como intMax "+inteNames[listaParts.indexOf(interv[i][0])][2]+"s");
+
+				console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+(tTot-interv[i][1])+"s de interv");
+			}
+		}
+	}
+
+	res+=interve+" intervenciones, de las cuales "+interrup(interr)+".<br>";
+	for(var i=0;i<listaParts.length;i++){
+		//console.error(inteNames[i]);
+		if(group) inteNames[i][6]=Number(document.getElementById('num'+i+','+0).value);
+		tHablado+=inteNames[i][1];
+		res+="&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;"+listaParts[i]+" intervino "+veces(inteNames[i][0])+" (el "+Math.round(100*inteNames[i][0]/interve)+"%, un "+Math.round((100*inteNames[i][0]/interve)-(100/listaParts.length))+"% de diferencia con lo que proporcionalmente le tocaba)";
+		res+=", de las cuales "+interrup(inteNames[i][3]);
+		if(interr>0) res+=" ("+Math.round(100*inteNames[i][3]/interr)+"% del total de interrupciones)";
+		res+=". Ha utilizado un tiempo total de ";
+		res+=msToTime(inteNames[i][1])+"s ("+Math.round(100*inteNames[i][1]/tAs)+"%, "+Math.round((100*inteNames[i][1]/tAs)-(100/listaParts.length))+"% de dif.), con una intervención máxima de "+msToTime(inteNames[i][2])+"s";
+		res+=" y le han interrumpido "+veces(inteNames[i][4]);
+		if(interr>0) res+="	("+Math.round(100*inteNames[i][4]/interr)+"%, "+Math.round((100*inteNames[i][4]/interr)-(100/listaParts.length))+"% de dif.)";
+		res+=".<br>";
+	}
+	res+="<br>El tiempo  hablado total ha sido "+msToTime(tHablado);
+	res+="<br>";
+	return res;
+}
+
+function veces(v){
+	if(v==1) return "una vez";
+	else return v+" veces";
+}
+
+function interrup(v){
+	if(v==0) return "ninguna fue interrupción";
+	if(v==1) return "una fue interrupción";
+	else return v+" fueron interrupciones";
+}
+
+function analIntCat(){
+	var res="<hr>&#9733; <b>Análisis de intervenciones por categorías</b><br>";
+	var sumCi;
+	for(var i=0;i<catName.length;i++){
+		findCats(i);
+		sumCi=new Array(numCi.length);
+		res+="&nbsp;&nbsp;&nbsp;&nbsp;- Por <b>"+catName[i]+":</b><br>";
+		for(var j=0;j<numCi.length;j++){
+			sumCi[j]=new Array(5);
+			for(var h=0;h<5;h++) sumCi[j][h]=0;
+			for(var k=0;k<num;k++)
+				if(matrix[k][i]==numCi[j]){
+					sumCi[j][0]+=inteNames[k][0];
+					sumCi[j][1]+=inteNames[k][1];
+					sumCi[j][2]+=inteNames[k][2];//sumando intervenciones máximas... ¿?
+					sumCi[j][3]+=inteNames[k][3];
+					sumCi[j][4]+=inteNames[k][4];
+				}
+			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;El grupo "'+numCi[j]+'" ha sumado:<br>';
+			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][0]+' intervenciones (el '+Math.round(sumCi[j][0]*100/interve)+'%, un '+(Math.round(sumCi[j][0]*100/interve)-prop(j,i))+'% de diferencia con lo que proporcionalmente le tocaba).<br>';
+			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+msToTime(sumCi[j][1])+'s de intervenciones (el '+Math.round(sumCi[j][1]*100/tHablado)+'%, un '+(Math.round(sumCi[j][1]*100/tHablado)-prop(j,i))+'% de diferencia con lo que proporcionalmente le tocaba).<br>';
+			//res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;"'+sumCi[j][2]+'"s de intervenciones.<br>';
+			if(interr!=0) res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][3]+' interrupciones hechas (el '+Math.round(sumCi[j][3]*100/interr)+'%).<br>';
+			else res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][3]+' interrupciones hechas (el 0%).<br>';
+			if(interr!=0) res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][4]+' interrupciones sufridas (el '+Math.round(sumCi[j][4]*100/interr)+'%).<br>';
+			else res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][3]+' interrupciones hechas (el 0%).<br>';
+		}
+	}
+	res+="<br><hr>";
+	return res;
+}
+
+var ind;
+var tot;
+function prop(j,i){
+	var cate=numCi[j];
+	var count=0;
+	
+	if(group&&i==0) {
+		tot=0;
+		count=Number(document.getElementById('num'+j+','+i).value);
+		for(var ii=0;ii<listaParts.length;ii++) tot+=Number(document.getElementById('num'+ii+','+0).value);
+		console.log("count="+count+", tot="+tot+", ind="+j);
+		return Math.round(count*100/tot);
+	}	
+	if(!group){
+	for(var k=0;k<num;k++)
+		if(document.getElementById('num'+k+','+i).value==cate) count++;
+	return Math.round(count*100/num);
+	}
+	for(var k=0;k<num;k++)
+		if(document.getElementById('num'+k+','+i).value==cate) count+=Number(document.getElementById('num'+k+','+0).value);
+	return Math.round(count*100/tot);
+}
+
+/*
+ *  Source: http://stevegardner.net/2012/06/11/javascript-code-to-calculate-the-pearson-correlation-coefficient/
+ */
+function getPearsonCorrelation(x, y) {
+    var xy = [];
+    var x2 = [];
+    var y2 = [];
+	var shortestArrayLength=x.length;
+    for(var i=0; i<shortestArrayLength; i++) {
+        xy.push(x[i] * y[i]);
+        x2.push(x[i] * x[i]);
+        y2.push(y[i] * y[i]);
+    }
+
+    var sum_x = 0;
+    var sum_y = 0;
+    var sum_xy = 0;
+    var sum_x2 = 0;
+    var sum_y2 = 0;
+
+    for(var i=0; i< shortestArrayLength; i++) {
+        sum_x += x[i];
+        sum_y += y[i];
+        sum_xy += xy[i];
+        sum_x2 += x2[i];
+        sum_y2 += y2[i];
+    }
+
+    var step1 = (shortestArrayLength * sum_xy) - (sum_x * sum_y);
+    var step2 = (shortestArrayLength * sum_x2) - (sum_x * sum_x);
+    var step3 = (shortestArrayLength * sum_y2) - (sum_y * sum_y);
+    var step4 = Math.sqrt(step2 * step3);
+    var answer = step1 / step4;
+
+    return answer;
+}
+
+function toText(tHTML){
+	tHTML = tHTML.replace(/<br>/g, '\n');
+	tHTML = tHTML.replace(/<b>/g, '');
+	tHTML = tHTML.replace(/<\/b>/g, '');
+	tHTML = tHTML.replace(/<h1>/g, '');
+	tHTML = tHTML.replace(/<hr>/g, '');
+	tHTML = tHTML.replace(/<\/h1>/g, '');
+	tHTML = tHTML.replace(/&nbsp;/g, ' ');
+	tHTML = tHTML.replace(/&middot;/g, '·');
+	tHTML = tHTML.replace(/&#9733;/g, '*');
+	return tHTML;
+}
+
+function downloadInt() {
+	//incluir al final  quienes no hablaron pero estaban
+	
+	document.getElementById("encr").style.display="block";
+	document.getElementById("wind").style.display="block";
+}
+
+function encrypt(){
+	if(document.getElementById("nomFich").value.length==0){
+		document.getElementById("nomFich").value="";
+		Android.showToast("Mete un nombre");
+		return;
+	}
+	if(document.getElementById("passFich").value.length==0){
+		document.getElementById("passFich").value="";
+		Android.showToast("Mete una clave");
+		return;
+	}
+	
+	var intervStr="#$";
+	if(group) intervStr+="g;\n";
+	else intervStr+=";\n";
+	for(var i=0;i<interv.length;i++)
+		intervStr+=(i+1)+":"+interv[i][0]+":"+(interv[i][1])+":"+interv[i][2]+";\n";
+	intervStr+="#tt="+tTot+"#ta="+tAs+"##";
+	
+	document.getElementById("encr").style.display="none";
+	document.getElementById("wind").style.display="none";
+	
+	
+	var str="";
+	str=AesCtr.encrypt(intervStr, document.getElementById("passFich").value, 256);
+	Android.recFileInter(document.getElementById("nomFich").value+".asm*",str);
+	//console.log("guardando:"+str);
+	document.getElementById("nomFich").value="";
+	document.getElementById("passFich").value="";
+}
+
+function downloadRes() {
+   Android.recFileRes(res);
+}
+
+function showToast(toast) {
+        Android.showToast(toast);
+    }
+</script>
+</body></html>
