@@ -8,6 +8,9 @@
 	<script src="aes.js"></script>
 	<script src="aes-ctr.js"></script>
 	<script src="Chart.js"></script>
+	<link rel="stylesheet" href="jquery.mobile-1.4.5.min.css">
+	<script src="jquery-1.11.3.min.js"></script>
+	<script src="jquery.mobile-1.4.5.min.js"></script>
     <meta charset="utf-8">
     <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
     <title>
@@ -19,7 +22,7 @@
 	left: 2%; 
 	top: 2%;
 	padding:1em;
-    width: 90%;
+    width: 85%;
     height: 90%;
 	display:none;
 	overflow:auto;
@@ -37,7 +40,7 @@ border: 2px solid #000000;
 	top: 20%;
 	padding:1em;
     width: 80%;
-    height: 50px;
+    height: 200px;
 	display:none;
 	z-index: 4;
 	background:rgba(255,255,255,1);
@@ -54,9 +57,10 @@ border: 2px solid #000000;
 	top: 40px;
 	padding:1em;
     width: 80%;
-    height: 150px;
+    height: 300px;
 	display:none;
 	z-index: 4;
+	overflow:auto;
 	background:rgba(255,255,255,1);
 	border: 1px solid #aaaaaa;
 	border-radius: 8px 8px 8px 8px;
@@ -71,9 +75,10 @@ border: 2px solid #000000;
 	top: 40px;
 	padding:1em;
     width: 80%;
-    height: 150px;
+    height: 300px;
 	display:none;
 	z-index: 4;
+	overflow:auto;
 	background:rgba(255,255,255,1);
 	border: 1px solid #aaaaaa;
 	border-radius: 8px 8px 8px 8px;
@@ -88,7 +93,7 @@ border: 2px solid #000000;
 	top: 40px;
 	padding:1em;
     width: 80%;
-    height: 50px;
+    height: 150px;
 	display:none;
 	z-index: 4;
 	background:rgba(255,255,255,1);
@@ -104,7 +109,7 @@ border: 2px solid #000000;
 	top: 40px;
 	padding:1em;
     width: 80%;
-    height: 50px;
+    height: 150px;
 	display:none;
 	z-index: 4;
 	background:rgba(255,255,255,1);
@@ -230,7 +235,6 @@ padding-top:2em;
 	left: 5%; 
 	top: 10%;
 	padding:1em;
-    width: 80%;
     height: 80%;
 	display:none;
 	z-index: 4;
@@ -242,17 +246,17 @@ padding-top:2em;
 -webkit-border-radius: 8px 8px 8px 8px;
 border: 2px solid #000000;
 }
+
 </style>
 </head>
 <body class="" id="grid">
 <div id="wind"></div>
 <div class="browser-landing" id="main">
-    <p align="center">&#9733; Evaluador cuantitativo de intervenciones en asambleas &#9733;</p>
+    <p align="center" style="font-size:11px">&#9733; Evaluador cuantitativo de intervenciones en asambleas &#9733;</p>
     <p align="center" id="botonesIni">
 		<button type="button" id="binstruc" onclick="instruc()">Instrucciones</button>
 		<button type="button" id="bcomienza" onclick="comienza()">Nueva Asamblea</button>
-		<button type="button" id="bcarga" onclick="cargarLista()">Cargar Archivo</button>
-		<button type="button" id="bgest" onclick="gestionar()">Gestionar Archivos</button>
+		<button type="button" id="bcarga" onclick="gestionar()">Archivos...</button>
     </p>
 	<div id="instruc">
 	<button type="button" id="instr" onclick="instruc()">Ocultar instruciones</button>
@@ -266,8 +270,9 @@ border: 2px solid #000000;
 		El propósito del mismo es visibilizar algunas relaciones de poder que suelen darse en los espacios supuestamente horizontales (y que, sin duda, honestamente aspiran 
 		a serlo), para ser motivo de discusión y trabajo grupal. Parafraseando (algo libremente) a Jo Freeman, no por no nombrarlo, deja de existir. Sólo afrontando las 
 		carencias de horizontalidad en nuestros espacios podremos seguir avanzando hacia ella.<br>
-		El núcleo del programa está escrito en JavaScript, lo que automáticamente hace de él un sistema de código abierto, público, evaluable y seguro en términos de troyanos, 
-		puertas traseras u otras amenazas informáticas. El programa hace lo que ves si accedes a la web del proyecto:<br>
+		El núcleo del programa está escrito en JavaScript (tanto lo que he hecho yo como las dos librerías que he usado), lo que automáticamente hace de él un sistema de 
+		código abierto, público, evaluable y seguro en términos de troyanos, puertas traseras u otras amenazas informáticas. El programa hace lo que ves si accedes al 
+		código fuente del proyecto: https://github.com/pablx/Positivimetro<br><b>Puedes auditar ese código y recompilar tu propia app con Android Studio.</b><br><br>
 		<hr><b>Qué hace y qué no hace</b><br>
 		Este programa lleva el registro de las intervenciones que se van haciendo a lo largo de una asamblea. Si quien lleva el programa quiere marcar cuáles han sido 
 		interrupciones, también puede hacerlo, haciendo doble click sobre el botón que corresponda. Asimismo, cronometra la duración de la asamblea (permitiendo parar dicha 
@@ -291,9 +296,9 @@ border: 2px solid #000000;
 		En ambos casos, tendremos que elegir identificadores para las personas o grupos que participan. Se recomienda empezar por unx mismx y meter a la gente que está colocada
 		por la izquierda. Cuando veas los botones en círculo, entenderás por qué. Recuerda que medimos intervenciones de roles, puede haber más identificadores que personas, 
 		por ejemplo, para registrar las intervenciones de moderación.<br>
-		- 'Carga Archivo', que nos permite abrir una asamblea previamente guardada. De la lista, podemos seleccionar la asamblea de prueba (sin encriptar) o las que hayamos
+		- 'Archivos...', que nos permite abrir una asamblea previamente guardada o borrarlas. De la lista, podemos seleccionar la asamblea de prueba (sin encriptar) o las que hayamos
 		guardado, encriptadas. Si intentamos abrir una encriptada, habrá que meter la clave. <b>OJO: si pierdes la clave de una asamblea no hay forma de recuperarla.</b>
-		- 'Borrar archivos', que permite borrar los archivos guardados, menos el de prueba.<br><br>
+		<br>También permite borrar los archivos guardados, menos el de prueba.<br><br>
 		<i>Comienza la asamblea</i><br>
 		Con los botones de 'play', 'pausa' y 'stop' podemos controlar el tiempo. Los botones de las personas particpantes no están habilitados hasta que se pulsa el 'play'.<br>
 		El 'stop' da por finalizada la asamblea.
@@ -312,8 +317,13 @@ border: 2px solid #000000;
 		Un detalle que puede desconcertar: la suma de porcentajes de tiempos usados en la asamblea se calcula sobre el tiempo de asamblea, no sobre el tiempo hablado 
 		(entendiendo que un silencio es un tiempo disponible para hablar, que se desdeña), por lo que no siempre dará el 100%, o incluso arrojará resultados negativos.<br>
 		<br><br>
+		Se pueden guardar los resultados con el botón que lo indica en una carpeta llamada "Psitivímetro", dentro de la carpeta de "Documents" o "Documentos" de la memoria interna del teléfono. Ahí encontraremos
+		tanto los resultados en texto como los gráficos en un PDF muuuuy largo de una sóla página.
+		<br><br>
 		Cualquier duda, aclaración, propuesta de mejora o crítica, escribir a sinopinionespropias@gmail.com<br><br>
-		<hr><p align='center'><b>IMPORTANTE</b></p>Aunque el móvil no esté conectado a la red (de telefonía o datos), eso no le impide, con los programas adecuados, grabar el sonido ambiental y por tanto las conversaciones. Hablar de temas delicados o que puedan poner en entredicho la seguridad legal o física de personas afines con un móvil encendido cerca es siempre una mala idea. ¡No les facilites el trabajo!
+		<hr><p align='center'><b>IMPORTANTE</b></p>Aunque el móvil no esté conectado a la red (de telefonía o datos), eso no le impide, con los programas adecuados, grabar 
+		el sonido ambiental y por tanto las conversaciones. Hablar de temas delicados o que puedan poner en entredicho la seguridad legal o física de personas afines con 
+		un móvil encendido cerca es siempre una mala idea. ¡No les facilites el trabajo!
 		<hr>Que disfrutéis (guiño guiño) de la asamblea.<br>¡Salud!<br><hr>
 		<br><button type="button" id="instr" onclick="instruc()">¡Entendido!</button>
 	</div>
@@ -368,6 +378,7 @@ border: 2px solid #000000;
 	
 	</form>
 	</div>
+	
     
     <div id="cats">
 		¿Cuántas categorías quieres analizar?<br> <input id="nc" size="3"/><button onclick="catsOk()">Ok</button>
@@ -377,6 +388,7 @@ border: 2px solid #000000;
 		<button type="button" id="bAnalizar" onclick="analizarAsamblea()">Analizar Asamblea</button>
 	</div>
     <div id="tabla"></div>
+	<div id="content">
     <div id="res"></div>
 	<div id="resG">
 	<div id="analInd">
@@ -461,7 +473,7 @@ border: 2px solid #000000;
 	<canvas id="myChart31" class="canv" width="400" height="400"></canvas>
 	<h2 align='center' id="resGI19" class="canv">Intervenciones</h2>
 	<canvas id="myChart32" class="canv" width="400" height="400"></canvas>
-	</div></div>
+	</div></div></div>
 	
     
 	
@@ -498,6 +510,7 @@ var numFiles=0;
 var borrando=false;
 var started=false;
 var group=false;
+var poblTotal=0;
 
 function cargarLista(){
 	borrando=false;
@@ -507,7 +520,7 @@ function cargarLista(){
 function gestionar(){
 	borrando=true;
 	Android.listFiles();
-	document.getElementById("formList").innerHTML+='<button type="button" onclick="borrar()">Borrar</button>';
+	//document.getElementById("formList").innerHTML+='<button type="button" onclick="borrar()">Abrir</button><button type="button" onclick="borrar()">Borrar</button>';
 }
 /*function leer(ev) {
 		var res=ev.target.result;
@@ -516,12 +529,7 @@ function gestionar(){
 		if(process(res)) fin();
 	}
 */
-/*inteNames[i][0]:#interv
-inteNames[i][1]:t total
-inteNames[i][2]:t max
-inteNames[i][3]:#interr hech
-inteNames[i][4]:#interr sufr
-*/
+
 /*
 interv[index][0]=quien;
 interv[index][1]=tAs;
@@ -531,7 +539,7 @@ interv[index][2]=false;
 function sdNoDisp(){
 	document.getElementById("bGuardar").disabled=true;
 	document.getElementById("bgest").disabled=true;
-	console.log("SD no disponible");
+	//console.log("SD no disponible");
 }
 
 function fileList(txt){
@@ -543,27 +551,32 @@ function fileList(txt){
 	for(var i=0;i<fileList.length-1;i++){
 		numFiles++;
 		//console.log("Fichero "+i+":"+fileList[i]);
-		if(borrando)
-			document.getElementById("formList").innerHTML+='<input type="radio" id="r'+i+'" name="r'+i+'" value="'+fileList[i]+'"> '+fileList[i]+'<br>'
-		else
-			document.getElementById("formList").innerHTML+='<input type="radio" id="r'+i+'" name="r" value="'+fileList[i]+'"> '+fileList[i]+'<br>'
+		document.getElementById("formList").innerHTML+='<input type="radio" id="r'+i+'" name="r'+i+'" value="'+fileList[i]+'"> '+fileList[i]+'<br>'
+		//document.getElementById("formList").innerHTML+='<input type="radio" id="r'+i+'" name="r" value="'+fileList[i]+'"> '+fileList[i]+'<br>'
 	}
-	if(borrando){
-		document.getElementById("formList").innerHTML+='<button type="button" onclick="borrar()">Borrar</button>';
-		document.getElementById("formList").innerHTML+='<button type="button" onclick="finBorrado()">¡Hecho!</button>';
-	}
-	else document.getElementById("formList").innerHTML+='<button type="button" onclick="sendChoice()">OK</button>';
+	document.getElementById("formList").innerHTML+='<button type="button" onclick="sendChoice()">Abrir</button>';
+	document.getElementById("formList").innerHTML+='<button type="button" onclick="borrar()">Borrar</button>';
+	document.getElementById("formList").innerHTML+='<button type="button" onclick="finBorrado()">¡Hecho!</button>';
 	
 }
 
 function sendChoice(){
-	document.getElementById("files").style.display="none";
-	document.getElementById("wind").style.display="none";
+	
+	var n=0,sel=0;
 	for(var i=0;i<numFiles;i++)
 		if (document.getElementById('r'+i).checked) {//ojo.....
-			Android.cargarFile(document.getElementById('r'+i).value);
+			n++;
+			sel=i;
 			//console.log("mandado a Android:"+document.getElementById('r'+i).value);
 		}
+	if(n==1){
+		document.getElementById("files").style.display="none";
+		document.getElementById("wind").style.display="none";
+		Android.cargarFile(document.getElementById('r'+sel).value);
+	}
+	else
+		if(n==0) Android.showToast("¿Qué pretendes que abra?");
+		else Android.showToast("Sólo se puede abrir un archivo");
 }
 
 function borrar(){
@@ -584,8 +597,9 @@ function finBorrado(){
 }
 
 function process(txt,ini){
+		
 		document.getElementById('botonesIni').style.display="none";
-		console.log("RECIBIDO: "+txt);
+		//console.log("RECIBIDO: "+txt);
 		if(ini&&txt.indexOf("#$g;")==-1&&txt.indexOf("#$;")==-1){
 			////////////////////////////////////
 			document.getElementById("decri").style.display="block";
@@ -638,7 +652,7 @@ function decrypt(){
 		Android.showToast("¡Magia!");
 	}
 	catch(e){
-		console.log("Error desencriptando...");
+		//console.log("Error desencriptando...");
 		Android.showToast("Contraseña equivocada");
 	}
 	document.getElementById("contFichD").value="";
@@ -700,7 +714,7 @@ function procesar(){
 			else
 				document.getElementById('pList').innerHTML+=", "+document.getElementById('valPart').value.trim();
 			listaParts.push(document.getElementById('valPart').value);
-			console.log("Añadiendo a "+document.getElementById('valPart').value.trim());
+			//console.log("Añadiendo a "+document.getElementById('valPart').value.trim());
 			document.getElementById('valPart').value="";
 			}
 			
@@ -720,7 +734,7 @@ function procesar(){
 			else
 				document.getElementById('gList').innerHTML+=", "+document.getElementById('valGrup').value.trim();
 			listaParts.push(document.getElementById('valGrup').value.trim());
-			console.log("Añadiendo a "+document.getElementById('valGrup').value.trim());
+			//console.log("Añadiendo a "+document.getElementById('valGrup').value.trim());
 			document.getElementById('valGrup').value="";
 			}
 }
@@ -774,8 +788,8 @@ function finPart(){
 	document.getElementById('bcomienza').style.display="none";
 	document.getElementById('bcarga').style.display="none";
 	document.getElementById('asamblea').style.display="block";
-	for(var a in listaParts)
-		console.log(listaParts[a]);
+	//for(var a in listaParts)
+	//	console.log(listaParts[a]);
 	crearAsamblea();
 }
 
@@ -791,9 +805,9 @@ function crearAsamblea(){
 function placeButton(num,tot,quien){
 	var left;
 	var top;
-	left=50-Math.sin(2*3.14*num/tot)*30;
-	top=Math.cos(2*3.14*num/tot)*150+260;
-	console.log("boton "+num+" de "+tot+" colocado en "+left+", "+top+".");
+	left=40-Math.sin(2*3.14*num/tot)*40;
+	top=Math.cos(2*3.14*num/tot)*200+300;
+	//console.log("boton "+num+" de "+tot+" colocado en "+left+", "+top+".");
 	return "<button type='button' id='"+quien+"' disabled style='position:absolute;left:"+left+"%;top:"+top+"%;' onclick='inter(\""+quien+"\")'>"+quien+"</button>";
 }
 
@@ -802,14 +816,14 @@ var lastQuien="";
 function inter(quien){
 	if(quien==lastQuien){
 		if(Date.now()<lastClick+300){
-			console.log("Interrumpió:"+quien);
+			//console.log("Interrumpió:"+quien);
 			index--;
 			interv[index][2]=true;
 			index++;
 			document.getElementById(quien).style.boxShadow = "3px 3px 8px orange";
 		}
 		else{
-			console.log("Terminó de hablar:"+quien);
+			//console.log("Terminó de hablar:"+quien);
 			lastQuien="";
 			interv[index]=new Array(3);
 			interv[index][0]="";
@@ -820,7 +834,7 @@ function inter(quien){
 		}
 	}
 	else{
-		console.log("Intervino:"+quien);
+		//console.log("Intervino:"+quien);
 		if(lastQuien!="") document.getElementById(lastQuien).style.boxShadow = "3px 3px 8px white";
 		lastQuien=quien;
 		interv[index]=new Array(3);
@@ -836,7 +850,7 @@ function inter(quien){
 
 function play(){
 	started=true;
-	console.log("play!!");
+	//console.log("play!!");
 	enableButtons(false);
 	document.getElementById('play').style.visibility="hidden";
 	document.getElementById('pause').style.visibility="visible";
@@ -844,7 +858,7 @@ function play(){
 }
 
 function pause(){
-	console.log("pause!!");
+	//console.log("pause!!");
 	enableButtons(true);
 	document.getElementById('pause').style.visibility="hidden";
 	document.getElementById('play').style.visibility="visible";
@@ -861,7 +875,7 @@ function createTable(num_rows,catName){
 	if(noCats) len=0;
     var theader = '<table border="0" id="tabla">\n';
     var tbody = '';
-	console.log("Tabla de "+num_rows+"x"+len);
+	//console.log("Tabla de "+num_rows+"x"+len);
     for( var i=0; i<num_rows+1;i++)
     {
         tbody += '<tr>';
@@ -1035,13 +1049,15 @@ function catsOk(){
 }
 
 function catsOk2(){
-	if(!group)
+	if(!group){
 		for(var i=0;i<cat;i++)
 			catName[i]=document.getElementById("cat"+(i+1)).value;
+	}
 	else{
 		catName[0]="Población";
 		for(var i=1;i<cat;i++)
 			catName[i]=document.getElementById("cat"+(i)).value;
+			
 	}
 	createTable(num,catName);
 	document.getElementById("cats").style.display="none";
@@ -1095,24 +1111,44 @@ function setTable(){
     //document.getElementById('tab').innerHTML = theader + tbody + tfooter;
 }
 
-var cabeceraRes="<br><hr><h1>RESULTADOS</h1><hr><br><div id='butsRes'><button onclick='pgraphs()'>Mostrar en gráficos</button>&nbsp<button onclick='texto()'>Mostrar en texto</button></div>";
+var cabeceraRes="<div id='editor'></div><br><hr><h1>RESULTADOS</h1><hr><br><div id='butsRes' align='center'><button id=\"cmd\" onclick='guardar()'>Guardar Resultados</button><br><button onclick='pgraphs(false)'>Mostrar en gráficos</button>&nbsp<button onclick='texto(false)'>Mostrar en texto</button></div>";
 var textoRes="";
+
+function guardar() {   
+	//console.log("guardando desde java");
+	texto(true);
+	pgraphs(true);
+	setTimeout(function(){ Android.saveResults(); }, 1000);
+}
 function anal(){
 	document.getElementById('tabla').style.display="none";
 	document.getElementById('botonesFin').style.display="none";
+	var strTemp=analInterv();//incluye calcPoblTotal();
 	if(!group) res="<b>Demografía</b><br>"+num+" personas en la asamblea.<br>";
-	else res="<b>Demografía</b><br>"+num+" grupos en la asamblea.<br>";
+	else res="<b>Demografía</b><br>"+num+" grupos en la asamblea ("+poblTotal+" personas).<br>";
 	if(!noCats) res+=analCats();
-	res+=analInterv();
+	res+=strTemp;
 	if(!noCats) res+=analIntCat();
 	if(!noCats) setTable();
 	document.getElementById('res').innerHTML=cabeceraRes;
 	textoRes=toText(res);
 }
 
+function calcPoblTotal(){
+	if(!group) poblTotal=listaParts.length;
+	else{
+		for(var i=0;i<inteNames.length;i++){
+			poblTotal+=inteNames[i][6];
+			//console.log("pobl de "+listaParts[i]+":"+inteNames[i][6]);
+		}
+	}
+}
+
 var textOn=false;
 var graphOn=false;
-function texto(){
+
+function texto(saving){
+	if(!saving){
 	if(graphOn){
 		graphOn=false;
 		document.getElementById('resG').style.display="none";
@@ -1122,13 +1158,15 @@ function texto(){
 		textOn=false;
 		return;
 	}
+	}
 	textOn=true;
 	document.getElementById('res').innerHTML=cabeceraRes;
 	document.getElementById('res').innerHTML +='<br>'+res+'<br>';//<button type="button" id="downInt" onclick="downloadInt()">Descargar intervenciones</button><button type="button" id="downRes" onclick="downloadRes()">Descargar resultados</button>';
 	
 }
 
-function pgraphs(){
+function pgraphs(saving){
+	if(!saving){
 	if(graphOn){
 		graphOn=false;
 		document.getElementById('resG').style.display="none";
@@ -1136,10 +1174,12 @@ function pgraphs(){
 		textOn=false;
 		return;
 	}
-	graphOn=true;
 	textOn=false;
+	}
+	graphOn=true;
 	document.getElementById('resG').style.display="block";
-	document.getElementById('res').innerHTML=cabeceraRes;
+	if(!saving) document.getElementById('res').innerHTML=cabeceraRes;
+	
 	//document.getElementById('resG').innerHTML+="<h2>Análisis individuales</h2><br>";
 	/*
 	inteNames[i][0]:#interv
@@ -1148,6 +1188,7 @@ function pgraphs(){
 	inteNames[i][3]:#interr hech
 	inteNames[i][4]:#interr sufr
 	inteNames[i][5]:t interrump
+	inteNames[i][6]:pobl (para grupos)
 	*/
 
 	var dat=[];
@@ -1182,7 +1223,7 @@ function pgraphs(){
 		dat[i]=inteNames[i][0];
 		datIH[i]=inteNames[i][3];
 		datIS[i]=inteNames[i][4];
-		dif[i]=Math.round((100*inteNames[i][0]/interve)-(100/listaParts.length));
+		dif[i]=Math.round((100*inteNames[i][0]/interve)-(100*inteNames[i][6]/poblTotal));
 		}
 	ordenadas=ordenarInt(dat,datIH,datIS,listaParts,dif);
 	dat=getColumn(ordenadas,1);
@@ -1215,7 +1256,7 @@ function pgraphs(){
 		var datCat=[];
 		for(var j=0;j<numCatsi;j++)
 			datCat[j]=prop(j,i);
-		document.getElementById('resGTit'+i).innerHTML+="<h2 align='center'>Para la categoría <b>\""+catName[i]+"\"</b></h2><br>";
+		if(document.getElementById('resGTit'+i).innerHTML.length==0) document.getElementById('resGTit'+i).innerHTML+="<h2 align='center'>Para la categoría <b>\""+catName[i]+"\"</b></h2><br>";
 		document.getElementById('resGTit'+i).style.display="block";
 		graphs(datCat,noms,3+i,"",0,[]);
 	}
@@ -1224,79 +1265,34 @@ function pgraphs(){
 	//disponible la X canvas...
 	
 	var sumCi;
-	for(var i=0;i<inteNames.length;i++) console.log("inteNames["+i+"]="+inteNames[i]);
 	for(var i=0;i<catName.length;i++){
 		findCats(i);
 		sumCi=new Array(numCi.length);
-		document.getElementById('resGTit'+(10+i)).innerHTML+="<h2 align='center'>Según '"+catName[i]+"'</h2>";
+		if(document.getElementById('resGTit'+(10+i)).innerHTML.length==0) document.getElementById('resGTit'+(10+i)).innerHTML+="<h2 align='center'>Según '"+catName[i]+"'</h2>";
 		document.getElementById('resGTit'+(10+i)).style.display="block";
 		document.getElementById('resGT'+(10+i)).style.display="block";
 		for(var j=0;j<numCi.length;j++){
-			sumCi[j]=new Array(7);
-			for(var h=0;h<7;h++) sumCi[j][h]=0;
+			sumCi[j]=new Array(inteNames[0].length);
+			for(var h=0;h<inteNames[0].length;h++) sumCi[j][h]=0;
 			
 			if(!group){
 			for(var k=0;k<num;k++)
 				if(matrix[k][i]==numCi[j]){
-				
-					/*
-					inteNames[i][0]:#interv
-					inteNames[i][1]:t total
-					inteNames[i][2]:t max
-					inteNames[i][3]:#interr hech
-					inteNames[i][4]:#interr sufr
-					inteNames[i][5]:t interrump
-					*/
-					sumCi[j][0]+=inteNames[k][0];
-					sumCi[j][1]+=inteNames[k][1];
-					sumCi[j][2]+=inteNames[k][2];//sumando intervenciones máximas... ¿?
-					sumCi[j][3]+=inteNames[k][3];
-					sumCi[j][4]+=inteNames[k][4];
-					sumCi[j][5]+=inteNames[k][5];
+					for(var h=0;h<inteNames[0].length;h++)
+						sumCi[j][h]+=inteNames[k][h];
 				}
 			}
 			else{
 				if(i==0){
-					
-				
-					/*
-					inteNames[i][0]:#interv
-					inteNames[i][1]:t total
-					inteNames[i][2]:t max
-					inteNames[i][3]:#interr hech
-					inteNames[i][4]:#interr sufr
-					inteNames[i][5]:t interrump
-					*/
-							sumCi[j][0]=inteNames[j][0];
-							sumCi[j][1]=inteNames[j][1];
-							sumCi[j][2]=inteNames[j][2];//sumando intervenciones máximas... ¿?
-							sumCi[j][3]=inteNames[j][3];
-							sumCi[j][4]=inteNames[j][4];
-							sumCi[j][5]=inteNames[j][5];
-							sumCi[j][6]=inteNames[j][6];
-					
+					for(var h=0;h<inteNames[0].length;h++)
+						sumCi[j][h]=inteNames[j][h];
 				}
 				else{
-				for(var k=0;k<num;k++)
-				if(matrix[k][i]==numCi[j]){
-				
-					/*
-					inteNames[i][0]:#interv
-					inteNames[i][1]:t total
-					inteNames[i][2]:t max
-					inteNames[i][3]:#interr hech
-					inteNames[i][4]:#interr sufr
-					inteNames[i][5]:t interrump
-					*/
-					sumCi[j][0]+=inteNames[k][0];
-					sumCi[j][1]+=inteNames[k][1];
-					sumCi[j][2]+=inteNames[k][2];//sumando intervenciones máximas... ¿?
-					sumCi[j][3]+=inteNames[k][3];
-					sumCi[j][4]+=inteNames[k][4];
-					sumCi[j][5]+=inteNames[k][5];
-					sumCi[j][6]+=inteNames[k][6];
-					console.log("sumando población de inteNames["+k+"]:"+inteNames[j][6]+" a sumCi["+j+"]="+sumCi[j][6])
-				}
+					for(var k=0;k<num;k++)
+					if(matrix[k][i]==numCi[j]){
+						for(var h=0;h<inteNames[0].length;h++)
+							sumCi[j][h]+=inteNames[j][h];
+					}
 				}
 			}
 		}
@@ -1305,13 +1301,13 @@ function pgraphs(){
 		var dif=[];
 		
 		for(var j in sumCi){
-		console.log("sumCi["+j+"]="+sumCi[j]);
+		//console.log("sumCi["+j+"]="+sumCi[j]);
 			dat[j]=sumCi[j][1]/1000;
 			datI[j]=sumCi[j][5]/1000;
 			if(!group) dif[j]=Math.round((100*(sumCi[j][1]+sumCi[j][5])/tAs)-(100/numCi.length));
 			else{
 				if(i==0) dif[j]=Math.round((100*(sumCi[j][1]+sumCi[j][5])/tAs)-(prop(j,i)));
-				else dif[j]=Math.round((100*(sumCi[j][1]+sumCi[j][5])/tAs)-(100*sumCi[j][6]/tot));
+				else dif[j]=Math.round((100*(sumCi[j][1]+sumCi[j][5])/tAs)-(100*sumCi[j][6]/poblTotal));
 				}
 		}
 		//ordenar de mayor a menor
@@ -1337,7 +1333,7 @@ function pgraphs(){
 			if(!group) dif[j]=Math.round((100*sumCi[j][0]/interve)-(100/numCi.length));
 			else{
 				if(i==0) dif[j]=Math.round((100*sumCi[j][0]/interve)-(prop(j,0)));
-				else dif[j]=Math.round((100*sumCi[j][0]/interve)-(100*sumCi[j][6]/tot));
+				else dif[j]=Math.round((100*sumCi[j][0]/interve)-(100*sumCi[j][6]/poblTotal));
 			}
 		}
 		var ordenadas;
@@ -1674,29 +1670,27 @@ function getRandColors(n){
 function findCats(i){
 	numCi=new Array();
 	var guardar=true;
-	for(var j=0;j<num;j++){
+	for(var j=0;j<num;j++){//num, número de personas/grupos
 		guardar=true;
 		var cij;
 		if(group&&i==0) cij=Number(document.getElementById('num'+j+','+i).value);
 		else cij=document.getElementById('num'+j+','+i).value;
 		matrix[j][i]=cij;
-		console.log('Accediendo a la casilla: num'+j+','+i+' que tiene:'+cij);
+		//console.log('Accediendo a la casilla: num'+j+','+i+' que tiene:'+cij);
 		if(group&&i==0){
 			numCi[j]=listaParts[j];
 		}
 		else{
 			for(var k=0;k<numCi.length;k++){
-			console.log("Analizando:"+cij+" en "+numCi);
+			//console.log("Analizando:"+cij+" en "+numCi);
 			if(numCi[k]==cij) {guardar=false;break;}
-		}
-		if(guardar){
-			numCi[numCi.length]=cij;
-			console.log("Guardando:"+cij+" en "+numCi);
-		}
+			}
+			if(guardar){
+				numCi[numCi.length]=cij;
+				//console.log("Guardando:"+cij+" en "+numCi);
+			}
 		}
 	}
-	//Falta análisis de correlaciones... Asignar número a cada tipo de cada categoría antes, los que no sean núm.
-	console.log("Hay "+numCi.length+" tipos de "+catName[i]+": "+numCi);
 }
 
 function analCats(){
@@ -1707,7 +1701,7 @@ function analCats(){
 		findCats(i);//genera numCi
 		numCatsi=numCi.length;
 		if(numCatsi==1) res+="&nbsp;&nbsp;&nbsp;&nbsp;- Hay "+numCatsi+" tipo de <b>"+catName[i]+"</b>: ";
-		else res+="&nbsp;&nbsp;&nbsp;&nbsp;- Hay "+numCatsi+" tipo(s) de <b>"+catName[i]+"</b>: ";
+		else res+="&nbsp;&nbsp;&nbsp;&nbsp;- Hay "+numCatsi+" tipos de <b>"+catName[i]+"</b>: ";
 		for(var j=0;j<numCi.length;j++)
 			res+=numCi[j]+" ";
 		res=res.substr(0,res.length-1)+".<br>";
@@ -1731,15 +1725,15 @@ function analInterv(){
 		for(var j=0;j<7;j++)
 			inteNames[i][j]=0;
 	}
-	console.log("Analisis de intervenciones");
+	//console.log("Analisis de intervenciones");
 	
 	for(var i=0;i<index;i++){
 		console.warn(interv[i]);
 		if(interv[i][0].length>0){
 			interve++;
-			console.log("interve++ y ya:"+interve);
+			//console.log("interve++ y ya:"+interve);
 			inteNames[listaParts.indexOf(interv[i][0])][0]++;
-			console.log("Intervencion de "+listaParts[listaParts.indexOf(interv[i][0])]);
+			//console.log("Intervencion de "+listaParts[listaParts.indexOf(interv[i][0])]);
 
 		}
 		if(interv[i][2]){
@@ -1748,58 +1742,61 @@ function analInterv(){
 			inteNames[listaParts.indexOf(interv[i][0])][3]++;
 			if(i>0){
 				inteNames[listaParts.indexOf(interv[i-1][0])][4]++;
-				console.log("intentando acceder a indexOf("+interv[i-1][0]+") en listaParts:"+listaParts);
+				//console.log("intentando acceder a indexOf("+interv[i-1][0]+") en listaParts:"+listaParts);
 			}
-			console.log("Interrupcion de "+listaParts[listaParts.indexOf(interv[i][0])]+" y ya van "+inteNames[listaParts.indexOf(interv[i][0])][3]+" a "+listaParts[listaParts.indexOf(interv[i-1][0])]+" que lleva sufridas "+inteNames[listaParts.indexOf(interv[i-1][0])][4]);
+			//console.log("Interrupcion de "+listaParts[listaParts.indexOf(interv[i][0])]+" y ya van "+inteNames[listaParts.indexOf(interv[i][0])][3]+" a "+listaParts[listaParts.indexOf(interv[i-1][0])]+" que lleva sufridas "+inteNames[listaParts.indexOf(interv[i-1][0])][4]);
 		}
 		if(i<(index-1)){
 			if(interv[i][0].length>0){
 				if(!interv[i][2]){
 					inteNames[listaParts.indexOf(interv[i][0])][1]+=interv[i+1][1]-interv[i][1];
-					console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][1]+"s de interv");
+					//console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][1]+"s de interv");
 					}
 				else{
 					inteNames[listaParts.indexOf(interv[i][0])][5]+=interv[i+1][1]-interv[i][1];
-					console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][5]+"s de interrup");
+					//console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][5]+"s de interrup");
 					}
 				
 				if(inteNames[listaParts.indexOf(interv[i][0])][2]<interv[i+1][1]-interv[i][1])
 					inteNames[listaParts.indexOf(interv[i][0])][2]=interv[i+1][1]-interv[i][1];
-				console.log(listaParts[listaParts.indexOf(interv[i][0])]+" tiene como intMax "+inteNames[listaParts.indexOf(interv[i][0])][2]+"s");
+					//console.log(listaParts[listaParts.indexOf(interv[i][0])]+" tiene como intMax "+inteNames[listaParts.indexOf(interv[i][0])][2]+"s");
 			}
 		}
 		else {
 			if(interv[i][0].length>0){
 				if(!interv[i][2]){
 					inteNames[listaParts.indexOf(interv[i][0])][1]+=tTot-interv[i][1];
-					console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][1]+"s de interv");
+					//console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][1]+"s de interv");
 				}
 				else{
 					inteNames[listaParts.indexOf(interv[i][0])][5]+=tTot-interv[i][1];
-					console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][5]+"s de interv");
+					//console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+inteNames[listaParts.indexOf(interv[i][0])][5]+"s de interv");
 				}
 				if(inteNames[listaParts.indexOf(interv[i][0])][2]<tTot-interv[i][1])
 					inteNames[listaParts.indexOf(interv[i][0])][2]=tTot-interv[i][1];
-				console.log(listaParts[listaParts.indexOf(interv[i][0])]+" tiene como intMax "+inteNames[listaParts.indexOf(interv[i][0])][2]+"s");
+					//console.log(listaParts[listaParts.indexOf(interv[i][0])]+" tiene como intMax "+inteNames[listaParts.indexOf(interv[i][0])][2]+"s");
 
-				console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+(tTot-interv[i][1])+"s de interv");
+					//console.log(listaParts[listaParts.indexOf(interv[i][0])]+" suma "+(tTot-interv[i][1])+"s de interv");
 			}
 		}
 	}
-
+	for(var i=0;i<listaParts.length;i++){
+		if(group) inteNames[i][6]=Number(document.getElementById('num'+i+','+0).value);
+		else inteNames[i][6]=1;
+	}
+	calcPoblTotal();
 	res+=interve+" intervenciones, de las cuales "+interrup(interr)+".<br>";
 	for(var i=0;i<listaParts.length;i++){
-		//console.error(inteNames[i]);
-		if(group) inteNames[i][6]=Number(document.getElementById('num'+i+','+0).value);
-		tHablado+=inteNames[i][1];
-		res+="&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;"+listaParts[i]+" intervino "+veces(inteNames[i][0])+" (el "+Math.round(100*inteNames[i][0]/interve)+"%, un "+Math.round((100*inteNames[i][0]/interve)-(100/listaParts.length))+"% de diferencia con lo que proporcionalmente le tocaba)";
-		res+=", de las cuales "+interrup(inteNames[i][3]);
-		if(interr>0) res+=" ("+Math.round(100*inteNames[i][3]/interr)+"% del total de interrupciones)";
-		res+=". Ha utilizado un tiempo total de ";
-		res+=msToTime(inteNames[i][1])+"s ("+Math.round(100*inteNames[i][1]/tAs)+"%, "+Math.round((100*inteNames[i][1]/tAs)-(100/listaParts.length))+"% de dif.), con una intervención máxima de "+msToTime(inteNames[i][2])+"s";
-		res+=" y le han interrumpido "+veces(inteNames[i][4]);
-		if(interr>0) res+="	("+Math.round(100*inteNames[i][4]/interr)+"%, "+Math.round((100*inteNames[i][4]/interr)-(100/listaParts.length))+"% de dif.)";
-		res+=".<br>";
+			tHablado+=inteNames[i][1];
+			res+="&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;<b>\""+listaParts[i]+"\"</b> "+intStr()+" "+veces(inteNames[i][0])+" (el "+Math.round(100*inteNames[i][0]/interve)+"%, un "+(Math.round(100*inteNames[i][0]/interve-100*inteNames[i][6]/poblTotal))+"% de diferencia con lo que proporcionalmente "+le_s()+" tocaba)";
+			//console.log("grupo "+listaParts[i]+", %:"+Math.round(100*inteNames[i][0]/interve)+", esa pobl:"+100*inteNames[i][6]/poblTotal+", ya que son "+inteNames[i][6]+" de "+poblTotal);
+			res+=", de las cuales "+interrup(inteNames[i][3]);
+			if(interr>0) res+=" ("+Math.round(100*inteNames[i][3]/interr)+"% del total de interrupciones)";
+			res+=" y "+le_s()+" han interrumpido "+veces(inteNames[i][4]);
+			if(interr>0) res+="	("+Math.round(100*inteNames[i][4]/interr)+"%)";
+			res+=". "+ha_n()+" utilizado un tiempo total de ";
+			res+=msToTime(inteNames[i][1]+inteNames[i][5])+"s ("+Math.round(100*(inteNames[i][1]+inteNames[i][5])/tAs)+"%, "+Math.round((100*(inteNames[i][1]+inteNames[i][5])/tAs)-100*inteNames[i][6]/poblTotal)+"% de dif.), con una intervención máxima de "+msToTime(inteNames[i][2])+"s.";
+			res+=".<br>";
 	}
 	res+="<br>El tiempo  hablado total ha sido "+msToTime(tHablado);
 	res+="<br>";
@@ -1811,6 +1808,34 @@ function veces(v){
 	else return v+" veces";
 }
 
+function intStr(){
+	if(group) return "intervinieron";
+	else return "intervino";
+}
+function ha_n(){
+	if(group) return "Han";
+	else return "Ha";
+}
+function le_s(){
+	if(group) return "les";
+	else return "le";
+}
+
+function inteStr(i){
+	if(i==1) return "intervención";
+	else return "intervenciones";
+}
+
+function interHecStr(i){
+	if(i==1) return "es interrupción hecha";
+	else return "son interrupciones hechas";
+}
+
+function interSufStr(i){
+	if(i==1) return "interrupción sufrida";
+	else return "interrupciones sufridas";
+}
+
 function interrup(v){
 	if(v==0) return "ninguna fue interrupción";
 	if(v==1) return "una fue interrupción";
@@ -1818,31 +1843,31 @@ function interrup(v){
 }
 
 function analIntCat(){
+	if(group&&catName.length==1) return;
 	var res="<hr>&#9733; <b>Análisis de intervenciones por categorías</b><br>";
 	var sumCi;
-	for(var i=0;i<catName.length;i++){
+	var iini=0;
+	if(group) iini++;
+	for(var i=iini;i<catName.length;i++){
 		findCats(i);
 		sumCi=new Array(numCi.length);
 		res+="&nbsp;&nbsp;&nbsp;&nbsp;- Por <b>"+catName[i]+":</b><br>";
 		for(var j=0;j<numCi.length;j++){
-			sumCi[j]=new Array(5);
-			for(var h=0;h<5;h++) sumCi[j][h]=0;
+			sumCi[j]=new Array(inteNames[0].length);
+			for(var h=0;h<inteNames[0].length;h++) sumCi[j][h]=0;
 			for(var k=0;k<num;k++)
 				if(matrix[k][i]==numCi[j]){
-					sumCi[j][0]+=inteNames[k][0];
-					sumCi[j][1]+=inteNames[k][1];
-					sumCi[j][2]+=inteNames[k][2];//sumando intervenciones máximas... ¿?
-					sumCi[j][3]+=inteNames[k][3];
-					sumCi[j][4]+=inteNames[k][4];
+					for(var l=0;l<inteNames[k].length;l++)
+						sumCi[j][l]+=inteNames[k][l];
 				}
-			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;El grupo "'+numCi[j]+'" ha sumado:<br>';
-			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][0]+' intervenciones (el '+Math.round(sumCi[j][0]*100/interve)+'%, un '+(Math.round(sumCi[j][0]*100/interve)-prop(j,i))+'% de diferencia con lo que proporcionalmente le tocaba).<br>';
-			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+msToTime(sumCi[j][1])+'s de intervenciones (el '+Math.round(sumCi[j][1]*100/tHablado)+'%, un '+(Math.round(sumCi[j][1]*100/tHablado)-prop(j,i))+'% de diferencia con lo que proporcionalmente le tocaba).<br>';
-			//res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;"'+sumCi[j][2]+'"s de intervenciones.<br>';
-			if(interr!=0) res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][3]+' interrupciones hechas (el '+Math.round(sumCi[j][3]*100/interr)+'%).<br>';
+				
+			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;El grupo <b>"'+numCi[j]+'"</b> ha sumado:<br>';
+			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+(sumCi[j][0]+sumCi[j][3])+' '+inteStr(sumCi[j][0]+sumCi[j][3])+' (el '+	Math.round((sumCi[j][0]+sumCi[j][3])*100/interve)+'%, un '+(Math.round((sumCi[j][0]+sumCi[j][3])*100/interve)-prop(j,i))+'% de diferencia con lo que proporcionalmente le tocaba).';
+			if(interr!=0) res+=' De éstas, '+sumCi[j][3]+' '+interHecStr(sumCi[j][3])+' (el '+Math.round(sumCi[j][3]*100/interr)+'%).<br>';
 			else res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][3]+' interrupciones hechas (el 0%).<br>';
-			if(interr!=0) res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][4]+' interrupciones sufridas (el '+Math.round(sumCi[j][4]*100/interr)+'%).<br>';
-			else res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][3]+' interrupciones hechas (el 0%).<br>';
+			if(interr!=0) res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][4]+' '+interSufStr(sumCi[j][4])+' (el '+Math.round(sumCi[j][4]*100/interr)+'%).<br>';
+			else res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+sumCi[j][3]+' interrupciones sufridas (el 0%).<br>';
+			res+='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&middot;&nbsp;'+msToTime(sumCi[j][1]+sumCi[j][5])+'s de intervenciones (el '+Math.round((sumCi[j][1]+sumCi[j][5])*100/tHablado)+'%, un '+(Math.round((sumCi[j][1]+sumCi[j][5])*100/tHablado)-prop(j,i))+'% de diferencia con lo que proporcionalmente le tocaba).<br>';
 		}
 	}
 	res+="<br><hr>";
@@ -1850,26 +1875,22 @@ function analIntCat(){
 }
 
 var ind;
-var tot;
 function prop(j,i){
 	var cate=numCi[j];
 	var count=0;
 	
 	if(group&&i==0) {
-		tot=0;
 		count=Number(document.getElementById('num'+j+','+i).value);
-		for(var ii=0;ii<listaParts.length;ii++) tot+=Number(document.getElementById('num'+ii+','+0).value);
-		console.log("count="+count+", tot="+tot+", ind="+j);
-		return Math.round(count*100/tot);
+		return Math.round(count*100/poblTotal);
 	}	
 	if(!group){
 	for(var k=0;k<num;k++)
 		if(document.getElementById('num'+k+','+i).value==cate) count++;
-	return Math.round(count*100/num);
+		return Math.round(count*100/num);
 	}
 	for(var k=0;k<num;k++)
 		if(document.getElementById('num'+k+','+i).value==cate) count+=Number(document.getElementById('num'+k+','+0).value);
-	return Math.round(count*100/tot);
+	return Math.round(count*100/poblTotal);
 }
 
 /*

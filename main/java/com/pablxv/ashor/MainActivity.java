@@ -3,10 +3,14 @@ package com.pablxv.ashor;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.graphics.pdf.PdfDocument;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -17,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Random;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -24,43 +29,21 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        WebView.enableSlowWholeDocumentDraw();
         wb = new WebView(MainActivity.this);// webview in mainactivity
+
         setContentView(wb);// set the webview as the layout
-        //wb=(WebView)(findViewById(R.id.webView));
         wb.loadUrl("file:///android_asset/index.html");
         wb.getSettings().setJavaScriptEnabled(true);
-        JavaScriptInterface js=new JavaScriptInterface(this,wb);
+        JavaScriptInterface js = new JavaScriptInterface(this, wb);
         js.setMA(this);
         wb.addJavascriptInterface(js, "Android");
         //setContentView(findViewById(R.id.webView));//R.layout.activity_main);
     }
 
-    protected void callJS(String t){
+    protected void callJS(String t) {
         wb.loadUrl("javascript:showToast('" + t + "')");
     }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
 }
 
 class JavaScriptInterface {
@@ -122,9 +105,7 @@ class JavaScriptInterface {
         if(!externalSD) return;
         //guardar archivo
         try {
-            //Log.d("APP","INFO:COYO: Guardando:"+file+" con cont:"+text);
             myExternalFile = new File(mContext.getExternalFilesDir(filepath), file);
-            //Log.d("APP","INFO:COYO: guardando en:"+myExternalFile.getPath());
             FileOutputStream fos = new FileOutputStream(myExternalFile);
             fos.write(text.getBytes());
             fos.close();
@@ -135,7 +116,6 @@ class JavaScriptInterface {
 
     @android.webkit.JavascriptInterface
     public void cargarFile(String file) {
-        //Log.d("APP","INFO:COYO: "+file);
         BufferedReader reader = null;
         String content="";
         if(file.indexOf(".asm*")<0) {//archivo en assets, sin encriptar
@@ -191,8 +171,6 @@ class JavaScriptInterface {
 
     @android.webkit.JavascriptInterface
     public void deleteFile(String file) {
-        //Log.d("APP","INFO:COYO: borrando:"+file);
-
         if(!externalSD) return;
         myExternalFile = new File(mContext.getExternalFilesDir(filepath), file);
         boolean deleted = myExternalFile.delete();
@@ -220,7 +198,6 @@ class JavaScriptInterface {
         // de SDcard
         if(externalSD) {
             String path = Environment.getExternalStorageDirectory().toString()+"/Android/data/com.pablxv.ashor/files/asamList";
-            //Log.d("APP","INFO:COYO: buscando ficheros en:"+path);
             File f = new File(path);
             File files[] = f.listFiles();
             if(files!=null) {
@@ -228,7 +205,7 @@ class JavaScriptInterface {
                     sl += files[i].getName() + '¡';
             }
         }
-        final String s=sl;
+        final String s = sl;
         wb.post(new Runnable() {
             public void run() {
                 wb.loadUrl("javascript:fileList('" + s + "');");
@@ -236,7 +213,55 @@ class JavaScriptInterface {
         });
     }
 
+    @android.webkit.JavascriptInterface
+    public void saveResults(){
+        wb.post(new Runnable() {
+            public void run() {
+                saveImage();
+            }
+        });
+    }
 
-    //listFiles("store");
+    private void saveImage() {
+        wb.measure(View.MeasureSpec.makeMeasureSpec(
+                        View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        wb.layout(0, 0, wb.getMeasuredWidth(), wb.getMeasuredHeight());
+        PdfDocument document = new PdfDocument();
+        int pageNumber = 1;
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(wb.getMeasuredWidth(),
+                wb.getMeasuredHeight(), pageNumber).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+        //wb.draw(page.getCanvas());
+        wb.draw(page.getCanvas());
+        document.finishPage(page);
 
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
+        File myDir = new File(root + "/Positivimetro");
+        myDir.mkdirs();
+        Random generator = new Random();
+        int n = 10000;
+        n = generator.nextInt(n);
+        String fname = "Resultado-"+ n +".pdf";
+        showToast("Resultados guardados como:" + myDir + "/" + fname);
+        File file = new File (myDir, fname);
+        if (file.exists ()) file.delete ();
+        try {
+            //FileOutputStream out = new FileOutputStream(file);
+            //finalBitmap.compress(Bitmap.CompressFormat.PNG,100, out);
+            FileOutputStream out = new FileOutputStream(file);
+            document.writeTo(out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        MediaScannerConnection.scanFile(mContext, new String[] { file.toString() }, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.i("ExternalStorage", "Scanned " + path + ":");
+                        Log.i("ExternalStorage", "-> uri=" + uri);
+                    }
+                });
+    }
 }
